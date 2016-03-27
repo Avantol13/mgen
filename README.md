@@ -1,7 +1,9 @@
 -------------- Alex VanTol's Music Generator --------------
+
 Generates randomized musical compositions based on probabilities.
 
 -------------------- Folders and Files --------------------
+
 music_generator
 - My code
 
@@ -20,4 +22,5 @@ probabilities.cfg
 - Used for configuration of various probabilities during music generation
 
 -------------------------- Usage --------------------------
+
 - Currently, you just have to run main.py using Python 2.7
