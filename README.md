@@ -2,6 +2,12 @@
 
 Generates randomized musical compositions based on probabilities.
 
+---------------------- Dependencies ----------------------- 
+
+
+Add to Window's PATH:
+C:\Program Files (x86)\LilyPond\usr\bin;
+
 -------------------- Folders and Files --------------------
 
 music_generator
