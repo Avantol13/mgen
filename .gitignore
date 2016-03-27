@@ -1,3 +1,10 @@
+# Ignore generated pdfs and MIDI files
+*.pdf
+*.mid
+
+# Eclipse settings for PyDev
+.settings/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
