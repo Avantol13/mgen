@@ -4,6 +4,7 @@ Generates randomized musical compositions based on probabilities.
 
 ---------------------- Dependencies ----------------------- 
 
+Lilypond: http://www.lilypond.org/
 
 Add to Window's PATH:
 C:\Program Files (x86)\LilyPond\usr\bin;
