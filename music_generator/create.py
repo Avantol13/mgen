@@ -29,7 +29,7 @@ def create_composition(title='Untitled', tracks=None):
     
     return music_composition
        
-def create_melody_track(num_bars, key=choice.choose_key(), time_signature=meter.common_time): 
+def create_melody_track(num_bars, key, time_signature=meter.common_time): 
     '''
     Returns a mingus Track containing bars of randomly generated melodies.
     '''
@@ -60,7 +60,7 @@ def create_melody_track(num_bars, key=choice.choose_key(), time_signature=meter.
     
     return melody_track
 
-def create_chords_track(key=choice.choose_key(), time_signature=meter.common_time):
+def create_chords_track(key, time_signature=meter.common_time):
     '''
     Return a mingus Track given a key and time signature. 
     TODO: Create chord length other than all whole notes

@@ -30,4 +30,6 @@ probabilities.cfg
 
 -------------------------- Usage --------------------------
 
-- Currently, you just have to run main.py using Python 2.7
+- Currently, you just have to run main.py using Python 2.7.10+
+- Does NOT work with Python 3+
+- Will accept command line arguments (run main.py -h for more info)
