@@ -4,7 +4,9 @@ import ConfigParser
 
 # Global config dictionary to access data from parsed files
 config = dict()
-    
+
+config['Author'] = 'By: A. \'Cool\' Computer'
+
 def configure_probabilities(file_name='probabilities.cfg'):
     '''
     Parses the .cfg file to retrieve all the probabilities and saves them in a global dictionary

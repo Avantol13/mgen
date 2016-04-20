@@ -1,5 +1,5 @@
 # Project Modules
-from config import config
+from music_generator.config import config
 
 # Mingus Modules
 import mingus.core.meter as meter

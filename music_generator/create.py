@@ -2,6 +2,7 @@
 from music_generator import choice
 from music_generator import convert
 from music_generator import timing
+from music_generator.config import config
 
 # Mingus modules
 import mingus.core.progressions as progressions
@@ -14,7 +15,7 @@ def create_composition(title='Untitled', tracks=None):
     Creates a mingus Composition object from given tracks.
     '''
     music_composition = composition.Composition()
-    music_composition.set_author('Alex VanTol', '')
+    music_composition.set_author(config['Author'], '')
     
     # If no tracks are supplied, create everything
     if tracks is None:
@@ -54,6 +55,10 @@ def create_melody_track(num_bars, key, time_signature=meter.common_time):
         
         # Combine melody timing and notes into a mingus Bar object
         bar_to_add = convert.convert_notes_to_bar(key, melody_timing, chosen_notes, time_signature)
+        
+        print('TESTING STUFF...')
+        print(bar_to_add.determine_chords(shorthand=True))
+        print(bar_to_add.determine_progression(shorthand=True))
         
         # Add bar to track
         melody_track.add_bar(bar_to_add)
