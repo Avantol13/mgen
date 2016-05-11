@@ -7,6 +7,7 @@ Created on Apr 25, 2016
 # Project Modules
 from music_generator import convert
 from music_generator import time
+from music_generator import choice
 
 # Mingus modules
 import mingus.core.keys as keys
@@ -22,7 +23,6 @@ from mingus.midi import midi_file_out
 import mingus.core.scales as scales
 
 # Other Modules
-import random
 from datetime import datetime
 import os
 import warnings
@@ -43,8 +43,8 @@ class MusicGenerator(object):
         self.composition.title = composition_title
         self.composition.author = author_name
 
-        self.__time_signature = self.choose_time_signature(self.style)
-        self.__key = self.choose_key(self.style.probabilities['keys'])
+        self.__time_signature = choice.choose_time_signature(self.style)
+        self.__key = choice.choose_key(self.style.probabilities['keys'])
 
     def add_melody_track(self, num_bars, style=None, times_to_repeat=0, octave_adjust=0):
         '''
@@ -61,11 +61,11 @@ class MusicGenerator(object):
 
         # Determine scale based on key
         if major_key_bool:
-            scale = self.choose_scale(key, style.probabilities['major_scales'])
+            scale = choice.choose_scale(key, style.probabilities['major_scales'])
         else:
             # Only accepts all uppercase when determining scale from key
             key = key.upper()
-            scale = self.choose_scale(key, style.probabilities['minor_scales'])
+            scale = choice.choose_scale(key, style.probabilities['minor_scales'])
 
         for index in range(0, num_bars):
             # Create time for melody
@@ -75,7 +75,7 @@ class MusicGenerator(object):
             number_notes = time.get_notes_in_timing(melody_timing)
 
             # Choose notes for melody based on scale for given key
-            chosen_notes = self.choose_notes(number_notes, scale)
+            chosen_notes = choice.choose_notes(number_notes, scale)
 
             # Combine melody time and notes into a mingus Bar object
             bar_to_add = convert.convert_notes_to_bar(self.__key, melody_timing, chosen_notes,
@@ -133,7 +133,7 @@ class MusicGenerator(object):
                 matches.append((key, 1.0 / (len(temp_matches))))
 
             if found_possible_match:
-                raw_chord_progression = self.choose_chord_progression(matches)
+                raw_chord_progression = choice.choose_chord_progression(matches)
                 repeat_times_to_fill = num_bars / len(raw_chord_progression)
 
                 # Repeat chords as necessary to fill up bars to number specified
@@ -146,7 +146,7 @@ class MusicGenerator(object):
 
         # Number of bars was not specified, just pick a single chord progression
         else:
-            raw_chord_progression = self.choose_chord_progression(progression_probs)
+            raw_chord_progression = choice.choose_chord_progression(progression_probs)
 
         chord_progression_notes = progressions.to_chords(raw_chord_progression, self.__key)
 
@@ -283,7 +283,7 @@ class MusicGenerator(object):
 
             # Continue getting note progressions as long as they're room in the bar
             while (remaining_time_in_bar > 0.0):
-                next_timing = self.get_next_timing(remaining_time_in_bar, note_timing_dict)
+                next_timing = choice.choose_next_timing(remaining_time_in_bar, note_timing_dict)
 
                 melody_bar.append(next_timing)
 
@@ -303,136 +303,4 @@ class MusicGenerator(object):
                 extended_chord_progression.append(item)
         return extended_chord_progression
 
-    @staticmethod
-    def choose_scale(key, scale_prob_list):
-        '''
-        Return a randomly chosen key by using the provided probability dictionary.
-        '''
-        choice = random.uniform(0, 1)
-
-        for scale, value in scale_prob_list:
-            # Subtract the probability from the choice
-            choice = choice - float(value)
-
-            # When it reaches zero, we've hit our choice
-            if choice <= 0:
-                scale_instance = eval(scale)(key)
-                return scale_instance.ascending()
-
-    @staticmethod
-    def choose_key(key_prob_list):
-        '''
-        Return a randomly chosen key by using the provided probability dictionary.
-        '''
-        choice = random.uniform(0, 1)
-
-        for key, value in key_prob_list:
-            # Subtract the probability from the choice
-            choice = choice - float(value)
-
-            # When it reaches zero, we've hit our choice
-            if choice <= 0:
-                if keys.is_valid_key(key):
-                    return key.replace(' ', '')
-                else:
-                    raise AttributeError('Key: ' + key +
-                                         ' cannot be converted to a mingus scale. ' +
-                                         'Use # and b for sharp and flat.')
-
-    @staticmethod
-    def choose_time_signature(time_signature_prob_list):
-        '''
-        Return a randomly chosen time signature by using the provided probability dictionary.
-        TODO: Actually make this random (create probability in cfg file for time sigs)
-        '''
-        return meter.common_time
-
-    @staticmethod
-    def choose_chord_progression(chord_progression_prob_list):
-        '''
-        Return a randomly chosen chord progression by using the provided probability dictionary.
-        '''
-        choice = random.uniform(0, 1)
-
-        for chords, prob in chord_progression_prob_list:
-            # Subtract the probability from the choice
-            choice = choice - float(prob)
-
-            # When it reaches zero, we've hit our choice
-            if choice <= 0:
-                # Create a list of the chords
-                return chords.split(' ')
-
-    @staticmethod
-    def choose_notes(number_notes, scale):
-        '''
-        Returns a list of notes chosen randomly from a given scale.
-        '''
-        notes_in_scale = len(scale)
-        notes = []
-
-        while (len(notes) < number_notes):
-            # values less than 0 will result in a rest
-            choice = random.randint(-3, notes_in_scale - 1)
-            if choice >= -1:
-                notes.append(scale[choice])
-            else:
-                # Place a rest
-                notes.append(None)
-
-        return notes
-
-    @staticmethod
-    def get_next_timing(remaining_time_in_bar, note_timing_prob_list):
-        '''
-        Returns a "time" representing a series of notes that will fit in the
-        remaining portion of the bar.
-        '''
-        if remaining_time_in_bar > 0.0:
-            # The chosen time progression
-            the_chosen_one = None
-
-            # Whether or not we've found The Chosen One
-            the_chosen_one_found = False
-
-            # Random choice
-            choice = random.uniform(0, 1)
-
-            # As long as we haven't found The Chosen One, keep trying.
-            # Centuries may pass... but The Chosen One will be found (hopefully).
-            while (not the_chosen_one_found and choice >= 0):
-                choice = random.uniform(0, 1)
-
-                # Sort by the probability
-                #config.timing_probabilities.sort(key=lambda timing_probabilities: timing_probabilities[0])
-
-                for timing, val in note_timing_prob_list:
-                    # Subtract the probability from the choice
-                    choice = choice - float(val)
-
-                    # When it reaches zero, we've hit our choice
-                    if choice <= 0:
-                        note_timing = []
-                        parsed_note_timings = timing.split(' ')
-                        for item in parsed_note_timings:
-                            item = item.replace('\'', '')
-                            note_timing.append(eval(item))
-
-                        # Length of time The Chosen One takes up in the bar
-                        time_for_choice = time.get_notes_length(note_timing)
-
-                        # We may have found The Chosen One
-                        the_chosen_one = note_timing
-                        if (remaining_time_in_bar >= time_for_choice):
-                            the_chosen_one_found = True
-                            break
-        else:
-            '''
-            TODO: handle this better
-            '''
-            raise IndexError()
-
-        if the_chosen_one is None:
-            pass
-
-        return the_chosen_one
+    

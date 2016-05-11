@@ -1,3 +1,9 @@
+'''
+Created on May 11, 2016
+
+@author: Alex VanTol
+'''
+
 # Mingus Modules
 import mingus.containers.note as note
 import mingus.core.meter as meter
