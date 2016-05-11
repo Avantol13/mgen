@@ -38,7 +38,7 @@ class MusicGenerator(object):
         Constructor
         '''
         self.composition = mingus_composition.Composition()
-        
+
         self.style = style
         self.composition.title = composition_title
         self.composition.author = author_name
@@ -78,7 +78,8 @@ class MusicGenerator(object):
             chosen_notes = self.choose_notes(number_notes, scale)
 
             # Combine melody time and notes into a mingus Bar object
-            bar_to_add = convert.convert_notes_to_bar(self.__key, melody_timing, chosen_notes, self.__time_signature)
+            bar_to_add = convert.convert_notes_to_bar(self.__key, melody_timing, chosen_notes,
+                                                      self.__time_signature)
 
             #print('TESTING STUFF...')
             #print(bar_to_add.determine_chords(shorthand=True))
@@ -88,11 +89,12 @@ class MusicGenerator(object):
             melody_track.add_bar(bar_to_add)
 
         # Repeat chords per argument
-        melody_track.bars += melody_track.bars*times_to_repeat
+        melody_track.bars += melody_track.bars * times_to_repeat
 
         self.composition.add_track(melody_track)
 
-    def add_chords_track(self, num_bars=None, style=None, melody_track=None, times_to_repeat=0, octave_adjust=0, force_mode_scale=False):
+    def add_chords_track(self, num_bars=None, style=None, melody_track=None, times_to_repeat=0,
+                         octave_adjust=0, force_mode_scale=False):
         '''
         Adds a track to the composition filled with chords
         TODO: Create chord length other than all whole notes
@@ -119,7 +121,7 @@ class MusicGenerator(object):
             # Find all the possible progressions to match given length
             for key, value in progression_probs:
                 chords = key.split(' ')
-                if num_bars%len(chords) == 0:
+                if num_bars % len(chords) == 0:
                     found_possible_match = True
                     matches.append((key, value))
 
@@ -128,18 +130,19 @@ class MusicGenerator(object):
             temp_matches = matches
             matches = []
             for key, value in temp_matches:
-                matches.append((key, 1.0/(len(temp_matches))))
+                matches.append((key, 1.0 / (len(temp_matches))))
 
             if found_possible_match:
                 raw_chord_progression = self.choose_chord_progression(matches)
-                repeat_times_to_fill = num_bars/len(raw_chord_progression)
+                repeat_times_to_fill = num_bars / len(raw_chord_progression)
 
                 # Repeat chords as necessary to fill up bars to number specified
-                raw_chord_progression = self._repeat_chords_track(raw_chord_progression, repeat_times_to_fill)
+                raw_chord_progression = self._repeat_chords_track(raw_chord_progression,
+                                                                  repeat_times_to_fill)
 
             else:
-                raise AttributeError('Cannot find a chord progression to meet the requirement' + \
-                                     ' for ' + str(num_bars) + ' bars.' )
+                raise AttributeError('Cannot find a chord progression to meet the requirement' +
+                                     ' for ' + str(num_bars) + ' bars.')
 
         # Number of bars was not specified, just pick a single chord progression
         else:
@@ -151,11 +154,12 @@ class MusicGenerator(object):
         chord_progression = convert.change_octave(chord_progression_notes, octave_adjust)
 
         # Convert it to a mingus track
-        chord_track = convert.convert_chord_progression_to_track(self.__key, chord_progression, self.__time_signature)
+        chord_track = convert.convert_chord_progression_to_track(self.__key, chord_progression,
+                                                                 self.__time_signature)
         chord_track.style = style
-        
+
         # Repeat chords per argument
-        chord_track.bars += chord_track.bars*times_to_repeat
+        chord_track.bars += chord_track.bars * times_to_repeat
 
         self.composition.add_track(chord_track)
 
@@ -199,14 +203,16 @@ class MusicGenerator(object):
         '''
         if file_path is None:
             # Create filename based on key and time
-            file_path = str(os.getcwd()) + '\output\\' + str(datetime.now()).replace(' ', '_').replace(':', '.')
+            file_path = (str(os.getcwd()) + '\output\\' +
+                         str(datetime.now()).replace(' ', '_').replace(':', '.'))
 
         # Output the pdf score
         ly_string = LilyPond.from_Composition(self.composition)
         if ly_string and self.composition.tracks:
             LilyPond.to_pdf(ly_string, file_path)
         else:
-            warnings.warn('PDF not generated because the composition didn\'t have any tracks. :(', UserWarning)
+            warnings.warn('PDF not generated because the composition didn\'t have any tracks. :(',
+                          UserWarning)
             traceback.print_stack()
 
     def export_midi(self, file_name=None, bpm=100, repeat=0, verbose=False):
@@ -215,13 +221,16 @@ class MusicGenerator(object):
         '''
         if file_name is None:
             # Create filename based on key and time
-            file_name = str(os.getcwd()) + '\output\\' + str(datetime.now()).replace(' ', '_').replace(':', '.')
+            file_name = (str(os.getcwd()) + '\output\\' +
+                         str(datetime.now()).replace(' ', '_').replace(':', '.'))
 
         # Output a midi file
         if self.composition is not None and self.composition.tracks:
-            midi_file_out.write_Composition(file_name + '.mid', self.composition, bpm, repeat, verbose)
+            midi_file_out.write_Composition(file_name + '.mid', self.composition, bpm,
+                                            repeat, verbose)
         else:
-            warnings.warn('PDF not generated because the composition didn\'t have any tracks. :(', UserWarning)
+            warnings.warn('PDF not generated because the composition didn\'t have any tracks. :(',
+                          UserWarning)
             traceback.print_stack()
 
     def __str__(self):
@@ -240,18 +249,18 @@ class MusicGenerator(object):
             for index, track in enumerate(self.composition):
                 # I guess I should start at 1... ugh.
                 index += 1
-                
+
                 output += '================================== TRACK ' + str(index) + ' '
-                output += '='*(35-len(str(index)))
+                output += '=' * (35 - len(str(index)))
                 output += '\n'
 
                 for index, bar in enumerate(track):
                     # I guess I should start at 1... again... ugh.
                     index += 1
-                
+
                     output += '----------------------------------- Bar ' + str(index) + ' '
                     # Adjust line based on size of index (ex: two less '-' for 2-digit number)
-                    output += '-'*(36-len(str(index)))
+                    output += '-' * (36 - len(str(index)))
                     output += '\n'
                     output += str(bar) + '\n'
 
@@ -266,8 +275,9 @@ class MusicGenerator(object):
 
         # If valid time signature is supplied, use it to craft melody, otherwise use common time
         if not meter.is_valid(self.__time_signature):
-            raise AttributeError('Time signature: ' + self.__time_signature + ' cannot be converted to a mingus meter. ' +
-                             'Use tuple (#, #) format. Ex: (4, 4)')
+            raise AttributeError('Time signature: ' + self.__time_signature +
+                                 ' cannot be converted to a mingus meter. ' +
+                                 'Use tuple (#, #) format. Ex: (4, 4)')
         else:
             remaining_time_in_bar = time.get_time_remaining(melody_bar, self.__time_signature)
 
@@ -315,7 +325,7 @@ class MusicGenerator(object):
         Return a randomly chosen key by using the provided probability dictionary.
         '''
         choice = random.uniform(0, 1)
-        
+
         for key, value in key_prob_list:
             # Subtract the probability from the choice
             choice = choice - float(value)
@@ -325,7 +335,8 @@ class MusicGenerator(object):
                 if keys.is_valid_key(key):
                     return key.replace(' ', '')
                 else:
-                    raise AttributeError('Key: ' + key + ' cannot be converted to a mingus scale. ' +
+                    raise AttributeError('Key: ' + key +
+                                         ' cannot be converted to a mingus scale. ' +
                                          'Use # and b for sharp and flat.')
 
     @staticmethod
@@ -362,7 +373,7 @@ class MusicGenerator(object):
 
         while (len(notes) < number_notes):
             # values less than 0 will result in a rest
-            choice = random.randint(-3, notes_in_scale-1)
+            choice = random.randint(-3, notes_in_scale - 1)
             if choice >= -1:
                 notes.append(scale[choice])
             else:
@@ -374,7 +385,8 @@ class MusicGenerator(object):
     @staticmethod
     def get_next_timing(remaining_time_in_bar, note_timing_prob_list):
         '''
-        Returns a "time" representing a series of notes that will fit in the remaining portion of the bar.
+        Returns a "time" representing a series of notes that will fit in the
+        remaining portion of the bar.
         '''
         if remaining_time_in_bar > 0.0:
             # The chosen time progression
@@ -422,5 +434,5 @@ class MusicGenerator(object):
 
         if the_chosen_one is None:
             pass
-        
+
         return the_chosen_one

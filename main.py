@@ -11,9 +11,6 @@ TODO: Use http://www.sphinx-doc.org/en/stable/tutorial.html for documentation
 from music_generator.create import MusicGenerator
 from music_generator import style
 
-# TODO: uncomment once CLI is reimplemented
-#from gooey import Gooey
-#@Gooey
 def main():
     my_style = style.Style(style.DEFAULT)
     my_generator = MusicGenerator(my_style, composition_title='Programmatically Generated Music')
@@ -24,7 +21,7 @@ def main():
 
     my_generator.export_pdf()
     my_generator.export_midi(bpm=90)
-    
+
     print(my_generator)
 
 if __name__ == '__main__':

@@ -57,13 +57,14 @@ def convert_to_scale(key, scale):
 
     return notes_in_scale
 
-def convert_chord_progression_to_track(key, chord_progression, time_signature=meter.common_time, chord_timing=None):
+def convert_chord_progression_to_track(key, chord_progression, time_signature=meter.common_time,
+                                       chord_timing=None):
     '''
     Return a mingus Track given a key, chord progression, chord timing, and time signature.
     '''
     # If chord_timing not provided, make each chord a whole bar
-    if (chord_timing == None):
-        chord_timing=[[value.whole]]*len(chord_progression)
+    if chord_timing is None:
+        chord_timing = [[value.whole]] * len(chord_progression)
 
     new_track = track.Track()
 
