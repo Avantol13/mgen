@@ -31,7 +31,7 @@ def choose_scale(key, scale_prob_list):
         # When it reaches zero, we've hit our choice
         if choice <= 0:
             scale_instance = eval(scale)(key)
-            return scale_instance.ascending()
+            return scale_instance
 
 def choose_key(key_prob_list):
     '''
@@ -77,15 +77,17 @@ def choose_chord_progression(chord_progression_prob_list):
 def choose_notes(number_notes, scale):
     '''
     Returns a list of notes chosen randomly from a given scale.
+
+    TODO: Don't just use the ascending scale...
     '''
-    notes_in_scale = len(scale)
+    notes_in_scale = len(scale.ascending())
     notes = []
 
     while (len(notes) < number_notes):
         # values less than 0 will result in a rest
         choice = random.randint(-3, notes_in_scale - 1)
         if choice >= -1:
-            notes.append(scale[choice])
+            notes.append(scale.ascending()[choice])
         else:
             # Place a rest
             notes.append(None)
