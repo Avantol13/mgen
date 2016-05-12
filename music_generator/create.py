@@ -11,12 +11,12 @@ from music_generator import choice
 
 # Mingus modules
 import mingus.core.keys as keys
+import mingus.containers.bar as bar
 import mingus.core.progressions as progressions
 import mingus.core.meter as meter
 import mingus.containers.composition as mingus_composition
 import mingus.containers.track as track
 import mingus.extra.lilypond as LilyPond
-import mingus.core.value as value
 from mingus.midi import midi_file_out
 
 # Need scales import for eval() purposes, DON'T remove
@@ -46,7 +46,7 @@ class MusicGenerator(object):
         self.__time_signature = choice.choose_time_signature(self.style)
         self.__key = choice.choose_key(self.style.probabilities['keys'])
 
-    def add_melody_track(self, num_bars, style=None, times_to_repeat=0, octave_adjust=0):
+    def add_melody_track(self, num_bars, location_to_add=1, style=None, times_to_repeat=0, octave_adjust=0):
         '''
         Adds a mingus Track containing bars of randomly generated melodies to the composition.
         '''
@@ -91,10 +91,15 @@ class MusicGenerator(object):
         # Repeat chords per argument
         melody_track.bars += melody_track.bars * times_to_repeat
 
+        # Add empty bars to the front of the track to place melody at the location specified
+        # Note: Start at Bar #1
+        empty_bars_to_add = location_to_add - 1
+        melody_track = time.prepend_empty_bars_to_track(melody_track, empty_bars_to_add)
+
         self.composition.add_track(melody_track)
 
-    def add_chords_track(self, num_bars=None, style=None, melody_track=None, times_to_repeat=0,
-                         octave_adjust=0, force_mode_scale=False):
+    def add_chords_track(self, num_bars=None, location_to_add=0, style=None, melody_track=None, 
+                         times_to_repeat=0, octave_adjust=0, force_mode_scale=False):
         '''
         Adds a track to the composition filled with chords
         TODO: Create chord length other than all whole notes
@@ -119,17 +124,17 @@ class MusicGenerator(object):
             repeat_times_to_fill = 0
 
             # Find all the possible progressions to match given length
-            for key, value in progression_probs:
+            for key, prob in progression_probs:
                 chords = key.split(' ')
                 if num_bars % len(chords) == 0:
                     found_possible_match = True
-                    matches.append((key, value))
+                    matches.append((key, prob))
 
             # TODO: Retain relative probabilities
             # For now, just make probabilities of possible matches all equal
             temp_matches = matches
             matches = []
-            for key, value in temp_matches:
+            for key, prob in temp_matches:
                 matches.append((key, 1.0 / (len(temp_matches))))
 
             if found_possible_match:
@@ -160,6 +165,11 @@ class MusicGenerator(object):
 
         # Repeat chords per argument
         chord_track.bars += chord_track.bars * times_to_repeat
+
+        # Add empty bars to the front of the track to place chords at the location specified
+        # Note: Start at Bar #1
+        empty_bars_to_add = location_to_add - 1
+        chord_track = time.prepend_empty_bars_to_track(chord_track, empty_bars_to_add)
 
         self.composition.add_track(chord_track)
 

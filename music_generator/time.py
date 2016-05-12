@@ -1,6 +1,14 @@
+'''
+Created on May 11, 2016
+
+@author: Alex VanTol
+'''
+
 # Mingus modules
 import mingus.core.meter as meter
 import mingus.containers.note as note
+import mingus.containers.bar as bar
+import mingus.core.value as value
 
 def get_notes_length(list_of_note_values):
     '''
@@ -28,7 +36,7 @@ def get_time_remaining(melody_bar, time_signature=meter.common_time):
     '''
     # Get information from time signature
     beats_in_measure = time_signature[0]
-    what_gets_beat    = (1.0 / time_signature[1])
+    what_gets_beat   = (1.0 / time_signature[1])
 
     # Beat it
     total_time = beats_in_measure * what_gets_beat
@@ -39,3 +47,10 @@ def get_time_remaining(melody_bar, time_signature=meter.common_time):
             time_in_measure += (1.0 / note)
 
     return (total_time - time_in_measure)
+
+def prepend_empty_bars_to_track(track, num_bars):
+    empty_bar = bar.Bar()
+    empty_bar.place_rest(value.whole)
+    for index in range(0, num_bars):
+        track.bars.insert(0, empty_bar)
+    return track
