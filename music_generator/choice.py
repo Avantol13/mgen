@@ -54,8 +54,8 @@ def choose_key(key_prob_list):
 
 def choose_time_signature(time_signature_prob_list):
     '''
-    Return a randomly chosen time signature by using the provided probability 
-    dictionary. TODO: Actually make this random (create probability in cfg file 
+    Return a randomly chosen time signature by using the provided probability
+    dictionary. TODO: Actually make this random (create probability in cfg file
     for time sigs)
     '''
     return meter.common_time

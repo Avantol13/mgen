@@ -32,7 +32,7 @@ def get_notes_in_timing(timing):
 
 def get_time_remaining(melody_bar, time_signature=meter.common_time):
     '''
-    Return the remaining musical time in the given bar for the given time 
+    Return the remaining musical time in the given bar for the given time
     signature.
     '''
     # Get information from time signature

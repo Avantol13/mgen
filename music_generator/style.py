@@ -28,8 +28,7 @@ class Style(object):
     def parse_probabilities_file(self, file_name):
         '''
         Parses the .cfg file to retrieve all the probabilities
-        TODO: Add a check to make sure all probabilities in a section add up 
-        to 1.0
+        TODO: Add a check to make sure all probabilities in a section add up to 1.0
         '''
         config_parser = ConfigParser.ConfigParser()
 
@@ -51,8 +50,7 @@ class Style(object):
                 section_to_add.append((item[0], parsed_values))
 
             # Sort it by probability (convert to list)
-            sorted_section = sorted(section_to_add, 
-                                    key=lambda section_to_add: section_to_add[1])
+            sorted_section = sorted(section_to_add, key=lambda section_to_add: section_to_add[1])
             self.probabilities[section] = sorted_section
 
         if 'progressions' not in self.probabilities.keys():
