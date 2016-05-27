@@ -54,14 +54,16 @@ def choose_key(key_prob_list):
 
 def choose_time_signature(time_signature_prob_list):
     '''
-    Return a randomly chosen time signature by using the provided probability dictionary.
-    TODO: Actually make this random (create probability in cfg file for time sigs)
+    Return a randomly chosen time signature by using the provided probability 
+    dictionary. TODO: Actually make this random (create probability in cfg file 
+    for time sigs)
     '''
     return meter.common_time
 
 def choose_chord_progression(chord_progression_prob_list):
     '''
-    Return a randomly chosen chord progression by using the provided probability dictionary.
+    Return a randomly chosen chord progression by using the provided probability
+    dictionary.
     '''
     choice = random.uniform(0, 1)
 
@@ -113,9 +115,6 @@ def choose_next_timing(remaining_time_in_bar, note_timing_prob_list):
         # Centuries may pass... but The Chosen One will be found (hopefully).
         while (not the_chosen_one_found and choice >= 0):
             choice = random.uniform(0, 1)
-
-            # Sort by the probability
-            #config.timing_probabilities.sort(key=lambda timing_probabilities: timing_probabilities[0])
 
             for timing, val in note_timing_prob_list:
                 # Subtract the probability from the choice

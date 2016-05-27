@@ -13,9 +13,11 @@ import mingus.core.keys as keys
 import mingus.containers.bar as bar
 import mingus.containers.track as track
 
-def convert_notes_to_bar(musical_key, melody_timing, chosen_notes, time_signature=meter.common_time):
+def convert_notes_to_bar(musical_key, melody_timing, chosen_notes, 
+                         time_signature=meter.common_time):
     '''
-    Returns a bar of music by combining a given key, note timing, notes, and time signature.
+    Returns a bar of music by combining a given key, note timing, notes, 
+    and time signature.
     '''
     mingus_bar = bar.Bar()
     if keys.is_valid_key(musical_key):
@@ -35,7 +37,8 @@ def convert_notes_to_bar(musical_key, melody_timing, chosen_notes, time_signatur
 
                 mingus_bar.place_notes(note, note_timing)
     else:
-        raise AttributeError('Key: ' + musical_key + ' cannot be converted to a mingus key.')
+        raise AttributeError('Key: ' + musical_key + ' cannot be converted' + 
+                             ' to a mingus key.')
 
     return mingus_bar
 
@@ -58,15 +61,17 @@ def convert_to_scale(key, scale):
             key = key.upper()
             notes_in_scale = scales.NaturalMinor(key).ascending()
     except Exception:
-        raise AttributeError('Key: ' + key + ' cannot be converted to a mingus scale. ' +
-                             'Use # and b for sharp and flat.')
+        raise AttributeError('Key: ' + key + ' cannot be converted to a' + 
+                             ' mingus scale. Use # and b for sharp and flat.')
 
     return notes_in_scale
 
-def convert_chord_progression_to_track(key, chord_progression, time_signature=meter.common_time,
+def convert_chord_progression_to_track(key, chord_progression, 
+                                       time_signature=meter.common_time,
                                        chord_timing=None):
     '''
-    Return a mingus Track given a key, chord progression, chord timing, and time signature.
+    Return a mingus Track given a key, chord progression, chord timing, 
+    and time signature.
     '''
     # If chord_timing not provided, make each chord a whole bar
     if chord_timing is None:
@@ -77,7 +82,9 @@ def convert_chord_progression_to_track(key, chord_progression, time_signature=me
     chord_index = 0
 
     for timing in chord_timing:
-        new_bar = convert_notes_to_bar(key, [timing], [chord_progression[chord_index]], time_signature)
+        new_bar = convert_notes_to_bar(key, [timing], 
+                                       [chord_progression[chord_index]], 
+                                       time_signature)
         chord_index += 1
         new_track.add_bar(new_bar)
 
@@ -85,7 +92,8 @@ def convert_chord_progression_to_track(key, chord_progression, time_signature=me
 
 def change_octave(note_timings, octave_change):
     '''
-    Returns note timing with octave change based on value for octave_change (ex: -1, 2)
+    Returns note timing with octave change based on value for octave_change
+    (ex: -1, 2)
     '''
     new_note_timings = []
 
