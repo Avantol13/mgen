@@ -1,6 +1,7 @@
 # Ignore generated pdfs and MIDI files
 *.pdf
 *.mid
+*.pkl
 
 # Eclipse settings for PyDev
 .settings/

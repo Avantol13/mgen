@@ -133,7 +133,7 @@ class Bar(object):
     def change_note_duration(self, at, to):
         """Change the note duration at the given index to the given
         duration."""
-        if valid_beat_duration(to):
+        if _meter.valid_beat_duration(to):
             diff = 0
             for x in self.bar:
                 if diff != 0:
@@ -242,7 +242,7 @@ class Bar(object):
         note_timings = [str(note_info[1]) for note_info in self.bar]
         notes        = [str(note_info[2]).replace('\'', '').replace('-', '') for note_info in self.bar]
         output += 'Note Timings: '
-        output += ', '.join(note_timings) 
+        output += ', '.join(note_timings)
         output += '\n       Notes: ' + ', '.join(notes)
         return str(output)
 

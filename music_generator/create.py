@@ -25,13 +25,14 @@ import mingus.core.scales as scales
 # Other Modules
 from datetime import datetime
 import os
+import sys
 import warnings
 import traceback
 import pickle
 
 class MusicGenerator(object):
     '''
-    classdocs
+    A magical deity capable of generating music based on a predefined style
     '''
 
     def __init__(self, style, composition_title='Untitled',
@@ -230,13 +231,24 @@ class MusicGenerator(object):
             traceback.print_stack()
             return
 
-        if not os.path.exists(file_path):
-            os.makedirs(file_path)
+        if file_path.endswith('/') or file_path.endswith('\\'):
+            # Get this directory and go up one
+            script_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+            file_path = os.path.normpath(os.path.join(script_path, file_path))
+            # Make folder if necessary
+            if not os.path.exists(file_path):
+                os.makedirs(file_path)
 
-        if file_path.endswith('/'):
             # Create filename based on key and time
-            file_path = (str(os.getcwd()) + '\output\\' +
+            file_path = (file_path + '\\' +
                          str(datetime.now()).replace(' ', '_').replace(':', '.'))
+        else:
+            file_path = os.path.abspath(file_path)
+
+            # Make folder if necessary
+            dir_path = os.path.dirname(file_path)
+            if not os.path.isdir(dir_path):
+                os.makedirs(dir_path)
 
         # Output the pdf score
         ly_string = LilyPond.from_Composition(self.composition)
@@ -249,7 +261,7 @@ class MusicGenerator(object):
 
     def export_midi(self, file_path, bpm=100, repeat=0, verbose=False):
         '''
-        Outputs a pdf to a specified path
+        Outputs a midi to a specified path
         '''
         if file_path is None:
             warnings.warn('MIDI not generated. Please specify valid path.',
@@ -257,17 +269,29 @@ class MusicGenerator(object):
             traceback.print_stack()
             return
 
-        if not os.path.exists(file_path):
-            os.makedirs(file_path)
+        if file_path.endswith('/') or file_path.endswith('\\'):
+            # Get this directory and go up one
+            script_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+            file_path = os.path.normpath(os.path.join(script_path, file_path))
+            # Make folder if necessary
+            if not os.path.exists(file_path):
+                os.makedirs(file_path)
 
-        if file_path.endswith('/'):
             # Create filename based on key and time
-            file_path = (str(os.getcwd()) + '\output\\' +
-                         str(datetime.now()).replace(' ', '_').replace(':', '.'))
+            file_path = (file_path + '\\' +
+                         str(datetime.now()).replace(' ', '_').replace(':', '.') +
+                         '.mid')
+        else:
+            file_path = os.path.abspath(file_path)
+
+            # Make folder if necessary
+            dir_path = os.path.dirname(file_path)
+            if not os.path.isdir(dir_path):
+                os.makedirs(dir_path)
 
         # Output a midi file
         if self.composition is not None and self.composition.tracks:
-            midi_file_out.write_Composition(file_path + '.mid', self.composition,
+            midi_file_out.write_Composition(file_path, self.composition,
                                             bpm, repeat, verbose)
         else:
             warnings.warn('MIDI not generated because the composition didn\'t' +
@@ -278,23 +302,33 @@ class MusicGenerator(object):
         '''
         Outputs a python pickled object to a specified path
         '''
-
-        if file_path is None:
+        if file_path is None or file_path == '':
             warnings.warn('Pickle not generated. Please specify valid path.',
                           UserWarning)
             traceback.print_stack()
             return
 
-        if not os.path.exists(file_path):
-            os.makedirs(file_path)
+        if file_path.endswith('/') or file_path.endswith('\\'):
+            # Get this directory and go up one
+            script_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+            file_path = os.path.normpath(os.path.join(script_path, file_path))
+            # Make folder if necessary
+            if not os.path.exists(file_path):
+                os.makedirs(file_path)
 
-        if file_path.endswith('/'):
             # Create filename based on key and time
-            file_name = (str(os.getcwd()) + '\output\\' +
+            file_path = (file_path + '\\' +
                          str(datetime.now()).replace(' ', '_').replace(':', '.') +
                          '.pkl')
+        else:
+            file_path = os.path.abspath(file_path)
 
-        with open(file_name, 'wb') as file:
+            # Make folder if necessary
+            dir_path = os.path.dirname(file_path)
+            if not os.path.isdir(dir_path):
+                os.makedirs(dir_path)
+
+        with open(file_path, 'wb') as file:
             pickle.dump(self, file, protocol=protocol_to_use)
 
     @staticmethod
