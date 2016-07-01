@@ -10,40 +10,81 @@ from music_generator.create import MusicGenerator
 from music_generator import style
 import sys
 import argparse
-from colorama import Fore, Back, Style
+from colorama import Fore
+from colorama import Style as ColoramaStyle
 import traceback
 
 def main():
     my_generator = None
+    my_style = style.Style(style.DEFAULT)
 
     # Parse arguments into script. Note that 1st argument is script name
     args = parse_args(sys.argv[1:])
 
-    try:
-        my_generator = MusicGenerator.from_pickle('data.pkl')
-    except IOError:
-        my_style = style.Style(style.DEFAULT)
-        my_generator = MusicGenerator(my_style,
-                                      composition_title='Programmatically ' +
-                                                        'Generated Music')
+    if args.verbose:
+        print_header()
 
-        my_generator.add_melody_track(style=my_style, location_to_add=0,
-                                      num_bars=4)
-        my_generator.add_melody_track(style=my_style, location_to_add=5,
-                                      num_bars=4, times_to_repeat=2)
+    # Use provided Style or use default
+    if args.style_file_path:
+        try:
+            my_style = style.Style(args.style_file_path)
+        except IOError:
+            print_error('Couldn\'t find ' + args.style_file_path)
 
-        my_generator.add_chords_track(num_bars=8, octave_adjust=-1)
-        my_generator.add_chords_track(num_bars=8, location_to_add=9,
-                                      octave_adjust=-1)
+    # Load MusicGenerator object is specified, otherwise create a new one
+    if args.load_pickle:
+        try:
+            my_generator = MusicGenerator.from_pickle(args.load_pickle)
+            # Force style if provided
+            if args.style_file_path:
+                my_generator.style = my_style
+        except IOError:
+            print_error('Couldn\'t find ' + args.load_pickle)
+    else:
+        my_generator = MusicGenerator(my_style, composition_title=args.composition_name)
 
+    # Force musical key if provided
+    if args.key:
+        my_generator.set_key(args.key)
+
+    if args.melody_track:
+        if args.repeat_tracks:
+            my_generator.add_melody_track(style=my_style,
+                                          location_to_add=args.start_bar,
+                                          num_bars=args.melody_track,
+                                          times_to_repeat=args.repeat_tracks)
+        else:
+            my_generator.add_melody_track(style=my_style, location_to_add=args.start_bar,
+                                          num_bars=args.melody_track)
+
+    if args.chords_track:
+        if args.repeat_tracks:
+            my_generator.add_chords_track(style=my_style,
+                                          location_to_add=args.start_bar,
+                                          num_bars=args.melody_track,
+                                          times_to_repeat=args.repeat_tracks)
+        else:
+            my_generator.add_chords_track(style=my_style, location_to_add=args.start_bar,
+                                          num_bars=args.melody_track,
+                                          octave_adjust=-1)
+
+    # File exports
     if args.generate_pickle:
-        my_generator.export_pickle(args.generate_pickle)
+        export_location = my_generator.export_pickle(args.generate_pickle)
+        if args.verbose:
+            print('Generated PKL file: ' + Fore.GREEN + export_location + Fore.RESET)
     if args.generate_pdf:
-        my_generator.export_pdf(args.generate_pdf)
+        export_location = my_generator.export_pdf(args.generate_pdf)
+        if args.verbose:
+            print('Generated PDF file: ' + Fore.GREEN + export_location + Fore.RESET)
     if args.generate_midi:
-        my_generator.export_midi(args.generate_midi, args.beats_per_minute)
+        export_location = my_generator.export_midi(args.generate_midi, args.beats_per_minute)
+        if args.verbose:
+            print('Generated MIDI file: ' + Fore.GREEN + export_location + Fore.RESET)
 
-    print(my_generator)
+    if args.verbose:
+        print('\n' + str(my_generator))
+        print_footer()
 
 def parse_args(args):
     """
@@ -52,33 +93,60 @@ def parse_args(args):
     :param args: The arguments passed into the script
     """
     # Parse arguments from command line
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-st', '--style_file_path',
-                        help='Path to configuration file, if not provided, ' +
-                             'will search style folder for default.cfg')
+    # NOTE: nargs=? allows 0 or 1 argument. If unspecified, will use default
+    parser = argparse.ArgumentParser(description='Music Generator: ' +
+                                     'Generate randomized musical ' +
+                                     'compositions based on probabilities.')
+    parser.add_argument('-mt', '--melody_track', metavar='NUM_BARS_TO_GEN',
+                        help='Adds a melody track to the composition.',
+                        nargs='?', const=8, type=int, default=None)
+    parser.add_argument('-ct', '--chords_track', metavar='NUM_BARS_TO_GEN',
+                        help='Adds a chords track to the composition.',
+                        nargs='?', const=8, type=int, default=None)
+    parser.add_argument('-sb', '--start_bar', type=int,
+                        help='Bar in the composition to add the tracks to. ' +
+                        ' For example, --start_bar 9 will generate tracks ' +
+                        'beginning at the 9th bar.',
+                        nargs='?', default=0)
+    parser.add_argument('-r', '--repeat_tracks', type=int,
+                        help='Will repeat the specified tracks the amount ' + 
+                        'of times specified.',
+                        nargs='?', const=1, default=None)
+
     parser.add_argument('-c', '--composition_name',
-                        help='Name to associate with the generated composition.')
+                        help='Name to associate with the generated composition.',
+                        nargs='?', default='Untitled')
     parser.add_argument('-k', '--key',
                         help='Forces the musical key. Use lower case for ' +
                         'minor keys, b for flat, and # for sharp')
-    parser.add_argument('-bpm', '--beats_per_minute',
-                        help='Beats per minute for midi output.',
-                        nargs='?', default=90)
 
-    # nargs=? allows 0 or 1 argument. If unspecified, will use default location
-    parser.add_argument('-midi', '--generate_midi',
+    parser.add_argument('-midi', '--generate_midi', metavar='MIDI_OUTPUT_PATH',
                         help='Generates the composition as a MIDI file',
                         nargs='?', const='output\\', default=None)
-    parser.add_argument('-pdf', '--generate_pdf',
+
+    parser.add_argument('-pdf', '--generate_pdf', metavar='PDF_OUTPUT_PATH',
                         help='Generates the musical score as a PDF file',
                         nargs='?', const='C:\\Temp\\example.pdf', default=None)
-    parser.add_argument('-pkl', '--generate_pickle',
+
+    parser.add_argument('-pkl', '--generate_pickle', metavar='PKL_OUTPUT_PATH',
                         help='Generates the MusicGenerator object as a .pkl ' +
                         '(reimportable Python object) file',
                         nargs='?', const='output\\', default=None)
 
-    parser.add_argument('-l', '--load_pickle',
-                        help='Load a MusicGenerator previously saved as a .pkl')
+    parser.add_argument('-st', '--style_file_path', metavar='STYLE_FILE_PATH',
+                        help='Path to musical probabilities configuration file,' +
+                        ' if not provided, will use default style.')
+
+    parser.add_argument('-l', '--load_pickle', metavar='PKL_FILE_PATH',
+                        help='Load a MusicGenerator previously saved as' +
+                        ' a .pkl file.')
+
+    parser.add_argument('-bpm', '--beats_per_minute',
+                        help='Beats per minute for midi output.',
+                        nargs='?', default=90, type=int)
+
+    parser.add_argument('-v', '--verbose', help='Print information to command window',
+                        action='store_true')
 
     return parser.parse_args()
 
@@ -86,21 +154,21 @@ def print_header():
     """
     Print header of tool into command line.
     """
-    print(Style.BRIGHT + '\n--------------------------------------------------' +
+    print(ColoramaStyle.BRIGHT + '\n--------------------------------------------------' +
           '------------------------------')
     print('   MUSIC GENERATOR')
     print('-------------------------------------------------------------------' +
-          '-------------\n' + Style.RESET_ALL)
+          '-------------\n' + ColoramaStyle.RESET_ALL)
 
 def print_footer():
     """
     Print footer of tool into command line.
     """
-    print(Style.BRIGHT + '\n--------------------------------------------------' +
+    print(ColoramaStyle.BRIGHT + '\n--------------------------------------------------' +
           '------------------------------')
     print('   END')
     print('-------------------------------------------------------------------' +
-          '-------------\n' + Style.RESET_ALL)
+          '-------------\n' + ColoramaStyle.RESET_ALL)
 
 def print_error(error=None):
     """
@@ -108,7 +176,7 @@ def print_error(error=None):
 
     :param error: Optional string to print before traceback
     """
-    print(Fore.RED + Style.BRIGHT + '!!!--------------------------------------' +
+    print(Fore.RED + ColoramaStyle.BRIGHT + '!!!--------------------------------------' +
           '------------------------------------!!!\n')
 
     if error is not None:
@@ -117,7 +185,7 @@ def print_error(error=None):
     traceback.print_exc()
 
     print('\n!!!--------------------------------------------------------------' +
-          '------------!!!' + Style.RESET_ALL + '\n')
+          '------------!!!' + ColoramaStyle.RESET_ALL + '\n')
 
 if __name__ == '__main__':
     main()

@@ -259,6 +259,8 @@ class MusicGenerator(object):
                           'have any tracks. :(', UserWarning)
             traceback.print_stack()
 
+        return file_path
+
     def export_midi(self, file_path, bpm=100, repeat=0, verbose=False):
         '''
         Outputs a midi to a specified path
@@ -298,6 +300,8 @@ class MusicGenerator(object):
                           ' have any tracks. :(', UserWarning)
             traceback.print_stack()
 
+        return file_path
+
     def export_pickle(self, file_path, protocol_to_use=pickle.HIGHEST_PROTOCOL):
         '''
         Outputs a python pickled object to a specified path
@@ -331,6 +335,8 @@ class MusicGenerator(object):
         with open(file_path, 'wb') as file:
             pickle.dump(self, file, protocol=protocol_to_use)
 
+        return file_path
+
     @staticmethod
     def from_pickle(pickle_file_name):
         pkl_file = open(pickle_file_name, 'rb')
@@ -342,12 +348,6 @@ class MusicGenerator(object):
         Returns a string representation of the class.
         '''
         output = ''
-        output += ('--------------------------------------------------------' +
-                   '--------------------\n')
-        output += ('------------------------------ Music Generator ---------' +
-                   '--------------------\n')
-        output += ('--------------------------------------------------------' +
-                   '--------------------\n\n')
         output += 'Time Signature: ' + str(self.__time_signature) + '\n'
         output += '           Key: ' + str(self.__key) + '\n'
         output += '\n'
