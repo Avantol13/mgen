@@ -283,6 +283,9 @@ class MusicGenerator(object):
             return
 
         # Lilypond doesn't like it if the file path already ends in .pdf
+        if file_path.lower()[-4:] == '.pdf':
+            file_path = file_path[:-4]
+
         file_path = MusicGenerator._create_file_path(file_path, '')
 
         # Output the pdf score
@@ -294,7 +297,7 @@ class MusicGenerator(object):
                           'have any tracks. :(', UserWarning)
             traceback.print_stack()
 
-        return (file_path + 'pdf')
+        return file_path + '.pdf'
 
     def export_midi(self, file_path, bpm=100, repeat=0, verbose=False):
         '''
@@ -356,6 +359,8 @@ class MusicGenerator(object):
         '''
         if file_path is None or file_path == '':
             return None
+
+        file_path = file_path.lower().strip()
 
         if file_path.endswith('/') or file_path.endswith('\\'):
             if file_extension is None:
