@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Avantol13/mgen.svg?branch=master)](https://travis-ci.org/Avantol13/mgen)
+
 Music Generator (mgen)
 ======================
  > By: Alexander VanTol
