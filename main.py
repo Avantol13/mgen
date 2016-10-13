@@ -2,46 +2,56 @@
 '''
 Created on Jan 21, 2016
 
-@author: Alex VanTol
+@author: Alexander VanTol
 '''
 
 # Project Modules
-from music_generator.create import MusicGenerator
-from music_generator import style
+import mgen
 import sys
 import argparse
+from colorama import init
 from colorama import Fore
 from colorama import Style as ColoramaStyle
 import traceback
+import os
 
 def main():
+    # Initialize colorama colored command line output
+    init()
+
     my_generator = None
-    my_style = style.Style(style.DEFAULT)
 
     # Parse arguments into script. Note that 1st argument is script name
     args = parse_args(sys.argv[1:])
 
-    if args.verbose:
-        print_header()
+    # If we don't want output, ignore all print statements
+    if args.silent:
+        # Redirect print output to null device on operating system
+        print_redirect = open(os.devnull, 'w')
+        sys.stdout = print_redirect
 
-    # Use provided Style or use default
+    print_header()
+
+    # Use provided StyleProbs or use default
     if args.style_file_path:
         try:
-            my_style = style.Style(args.style_file_path)
+            my_style = mgen.StyleProbs(args.style_file_path)
         except IOError:
             print_error('Couldn\'t find ' + args.style_file_path)
+    else:
+        my_style = mgen.StyleProbs(mgen.DEFAULT_CFG_FILE)
 
     # Load MusicGenerator object is specified, otherwise create a new one
     if args.load_pickle:
         try:
-            my_generator = MusicGenerator.from_pickle(args.load_pickle)
+            my_generator = mgen.MusicGenerator.from_pickle(args.load_pickle)
             # Force style if provided
             if args.style_file_path:
                 my_generator.style = my_style
         except IOError:
             print_error('Couldn\'t find ' + args.load_pickle)
     else:
-        my_generator = MusicGenerator(my_style, composition_title=args.composition_name)
+        my_generator = mgen.MusicGenerator(my_style, composition_title=args.composition_name)
 
     # Force musical key if provided
     if args.key:
@@ -62,7 +72,8 @@ def main():
             my_generator.add_chords_track(style=my_style,
                                           location_to_add=args.start_bar,
                                           num_bars=args.melody_track,
-                                          times_to_repeat=args.repeat_tracks)
+                                          times_to_repeat=args.repeat_tracks,
+                                          octave_adjust=-1)
         else:
             my_generator.add_chords_track(style=my_style, location_to_add=args.start_bar,
                                           num_bars=args.melody_track,
@@ -71,20 +82,16 @@ def main():
     # File exports
     if args.generate_pickle:
         export_location = my_generator.export_pickle(args.generate_pickle)
-        if args.verbose:
-            print('Generated PKL file: ' + Fore.GREEN + export_location + Fore.RESET)
+        print('Generated PKL file: ' + Fore.GREEN + export_location + Fore.RESET)
     if args.generate_pdf:
         export_location = my_generator.export_pdf(args.generate_pdf)
-        if args.verbose:
-            print('Generated PDF file: ' + Fore.GREEN + export_location + Fore.RESET)
+        print('Generated PDF file: ' + Fore.GREEN + export_location + Fore.RESET)
     if args.generate_midi:
         export_location = my_generator.export_midi(args.generate_midi, args.beats_per_minute)
-        if args.verbose:
-            print('Generated MIDI file: ' + Fore.GREEN + export_location + Fore.RESET)
+        print('Generated MIDI file: ' + Fore.GREEN + export_location + Fore.RESET)
 
-    if args.verbose:
-        print('\n' + str(my_generator))
-        print_footer()
+    print('\n' + str(my_generator))
+    print_footer()
 
 def parse_args(args):
     """
@@ -109,7 +116,7 @@ def parse_args(args):
                         'beginning at the 9th bar.',
                         nargs='?', default=0)
     parser.add_argument('-r', '--repeat_tracks', type=int,
-                        help='Will repeat the specified tracks the amount ' + 
+                        help='Will repeat the specified tracks the amount ' +
                         'of times specified.',
                         nargs='?', const=1, default=None)
 
@@ -122,16 +129,16 @@ def parse_args(args):
 
     parser.add_argument('-midi', '--generate_midi', metavar='MIDI_OUTPUT_PATH',
                         help='Generates the composition as a MIDI file',
-                        nargs='?', const='output\\', default=None)
+                        nargs='?', const=mgen.config._PATH_TO_SCRIPT + '/../output/', default=None)
 
     parser.add_argument('-pdf', '--generate_pdf', metavar='PDF_OUTPUT_PATH',
                         help='Generates the musical score as a PDF file',
-                        nargs='?', const='C:\\Temp\\example.pdf', default=None)
+                        nargs='?', const=mgen.config._PATH_TO_SCRIPT + '/../output/', default=None)
 
     parser.add_argument('-pkl', '--generate_pickle', metavar='PKL_OUTPUT_PATH',
                         help='Generates the MusicGenerator object as a .pkl ' +
                         '(reimportable Python object) file',
-                        nargs='?', const='output\\', default=None)
+                        nargs='?', const=mgen.config._PATH_TO_SCRIPT + '/../output/', default=None)
 
     parser.add_argument('-st', '--style_file_path', metavar='STYLE_FILE_PATH',
                         help='Path to musical probabilities configuration file,' +
@@ -145,7 +152,7 @@ def parse_args(args):
                         help='Beats per minute for midi output.',
                         nargs='?', default=90, type=int)
 
-    parser.add_argument('-v', '--verbose', help='Print information to command window',
+    parser.add_argument('-s', '--silent', help='Silence printing information to command window',
                         action='store_true')
 
     return parser.parse_args()
