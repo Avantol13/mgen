@@ -1,1 +1,2 @@
-ConfigParser==3.3.0.post2
+colorama>=0.3.7
+ConfigParser>=3.3.0.post2
