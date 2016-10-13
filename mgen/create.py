@@ -294,7 +294,7 @@ class MusicGenerator(object):
                           'have any tracks. :(', UserWarning)
             traceback.print_stack()
 
-        return file_path + '.pdf'
+        return (file_path + 'pdf')
 
     def export_midi(self, file_path, bpm=100, repeat=0, verbose=False):
         '''
@@ -359,10 +359,8 @@ class MusicGenerator(object):
 
         if file_path.endswith('/') or file_path.endswith('\\'):
             if file_extension is None:
-                raise AttributeError('Provide file_extension if only providing path')
-            # Get this directory and go up one
-            script_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-            file_path = os.path.normpath(os.path.join(script_path, file_path))
+                raise AttributeError('Provide file_extension if only providing path: ' + file_path)
+
             # Make folder if necessary
             if not os.path.exists(file_path):
                 os.makedirs(file_path)
