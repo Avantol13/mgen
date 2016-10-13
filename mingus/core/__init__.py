@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-#    mingus - Mingus - Music theory Python module, music_generator package.
+#    mingus - Mingus - Music theory Python module
 #    Copyright (C) 2008-2009, Bart Spaans
 #
 #    This program is free software: you can redistribute it and/or modify

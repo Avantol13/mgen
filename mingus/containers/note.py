@@ -25,7 +25,7 @@ class Note(object):
 
     """A note object.
 
-    In the mingus.music_generator module, notes are generally represented by strings.
+    In the mingus.core module, notes are generally represented by strings.
     Most of the times, this is not enough. We want to set the octave and
     maybe the amplitude, vibrato or other dynamics. Then we want to store
     the notes in bars, the bars in tracks, the tracks in compositions, etc.
@@ -60,13 +60,13 @@ class Note(object):
             raise NoteFormatError("Don't know what to do with name object: "
                     "'%s'" % name)
 
-    
+
     def set_channel(self, channel):
         self.channel = channel
-        
+
     def set_velocity(self, velocity):
         self.velocity = velocity
-    
+
     def set_note(self, name='C', octave=4, dynamics={}):
         """Set the note to name in octave with dynamics.
 
@@ -250,7 +250,7 @@ class Note(object):
     def __int__(self):
         """Return the current octave multiplied by twelve and add
         notes.note_to_int to it.
-        
+
         This means a C-0 returns 0, C-1 returns 12, etc. This method allows
         you to use int() on Notes.
         """
@@ -298,4 +298,3 @@ class Note(object):
     def __repr__(self):
         """Return a helpful representation for printing Note classes."""
         return "'%s-%d'" % (self.name, self.octave)
-

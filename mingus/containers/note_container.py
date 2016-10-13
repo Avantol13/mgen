@@ -103,7 +103,7 @@ class NoteContainer(object):
     def from_chord_shorthand(self, shorthand):
         """Empty the container and add the notes in the shorthand.
 
-        See mingus.music_generator.chords.from_shorthand for an up to date list of
+        See mingus.core.chords.from_shorthand for an up to date list of
         recognized format.
 
         Example:
@@ -122,7 +122,7 @@ class NoteContainer(object):
         """Empty the container and add the note described in the startnote and
         shorthand.
 
-        See music_generator.intervals for the recognized format.
+        See mgen.intervals for the recognized format.
 
         Examples:
         >>> nc = NoteContainer()
@@ -147,7 +147,7 @@ class NoteContainer(object):
         """Empty the container and add the notes described in the progressions
         shorthand (eg. 'IIm6', 'V7', etc).
 
-        See mingus.music_generator.progressions for all the recognized format.
+        See mingus.core.progressions for all the recognized format.
 
         Example:
         >>> NoteContainer().from_progression_shorthand('VI')
@@ -181,7 +181,7 @@ class NoteContainer(object):
     def is_consonant(self, include_fourths=True):
         """Test whether the notes are consonants.
 
-        See the music_generator.intervals module for a longer description on
+        See the mgen.intervals module for a longer description on
         consonance.
         """
         return self._consonance_test(intervals.is_consonant, include_fourths)
@@ -189,7 +189,7 @@ class NoteContainer(object):
     def is_perfect_consonant(self, include_fourths=True):
         """Test whether the notes are perfect consonants.
 
-        See the music_generator.intervals module for a longer description on
+        See the mgen.intervals module for a longer description on
         consonance.
         """
         return self._consonance_test(intervals.is_perfect_consonant,
@@ -198,7 +198,7 @@ class NoteContainer(object):
     def is_imperfect_consonant(self):
         """Test whether the notes are imperfect consonants.
 
-        See the music_generator.intervals module for a longer description on
+        See the mgen.intervals module for a longer description on
         consonance.
         """
         return self._consonance_test(intervals.is_imperfect_consonant)
@@ -206,7 +206,7 @@ class NoteContainer(object):
     def is_dissonant(self, include_fourths=False):
         """Test whether the notes are dissonants.
 
-        See the music_generator.intervals module for a longer description.
+        See the mgen.intervals module for a longer description.
         """
         return not self.is_consonant(not include_fourths)
 
@@ -355,4 +355,3 @@ class NoteContainer(object):
             if x not in other:
                 return False
         return True
-
