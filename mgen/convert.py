@@ -1,7 +1,7 @@
 '''
 Created on May 11, 2016
 
-@author: Alex VanTol
+@author: Alexander VanTol
 '''
 
 # Mingus Modules
@@ -18,17 +18,24 @@ def convert_notes_to_bar(musical_key, melody_timing, chosen_notes,
     '''
     Returns a bar of music by combining a given key, note timing, notes,
     and time signature.
+
+    :param musical_key: The musical key to put the bar in
+    :param melody_timing: Timing of the notes given
+    :param chosen_notes: The notes to assign to the timing
+    :param time_signature: The musical time signature for the bar
     '''
     mingus_bar = bar.Bar()
+
     if keys.is_valid_key(musical_key):
         mingus_bar.key = keys.Key(musical_key)
         mingus_bar.set_meter(time_signature)
 
-        # Index in list of notes to choose
-        chosen_note_index = 0
-
         # Go through timing, assign chosen note to each timing and add to bar
         for notes_timing in melody_timing:
+
+            # Index in list of notes to choose
+            chosen_note_index = 0
+
             for note_timing in notes_timing:
                 note = chosen_notes[chosen_note_index]
 
@@ -45,6 +52,10 @@ def convert_notes_to_bar(musical_key, melody_timing, chosen_notes,
 def convert_to_scale(key, scale):
     '''
     Returns a scale of notes given a key.
+
+    :param key: The musical key
+    :param scale: Unused
+
     TODO: Different scales? Add configuration for different scales.
     '''
     notes_in_scale = []
@@ -72,6 +83,11 @@ def convert_chord_progression_to_track(key, chord_progression,
     '''
     Return a mingus Track given a key, chord progression, chord timing,
     and time signature.
+
+    :param musical_key: The musical key to put the bar in
+    :param chord_progression: The progression of chords for the track
+    :param time_signature: The musical time signature for the track
+    :param chord_timing: Timing for the chords track
     '''
     # If chord_timing not provided, make each chord a whole bar
     if chord_timing is None:
@@ -93,7 +109,10 @@ def convert_chord_progression_to_track(key, chord_progression,
 def change_octave(note_timings, octave_change):
     '''
     Returns note timing with octave change based on value for octave_change
-    (ex: -1, 2)
+    (ex: change_octave(note_timings, -1))
+
+    :param note_timings: List of notes/chords to change octave of
+    :param octave_change: Integer to shift octave by. Positive is up, negative is down
     '''
     new_note_timings = []
 

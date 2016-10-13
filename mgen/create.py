@@ -1,13 +1,15 @@
 '''
 Created on Apr 25, 2016
 
-@author: Alex VanTol
+@author: Alexander VanTol
 '''
 
 # Project Modules
-from music_generator import convert
-from music_generator import time
-from music_generator import choice
+from mgen import convert
+from mgen import time
+from mgen import choice
+from mgen import style
+from style import StyleProbs
 
 # Mingus modules
 import mingus.core.keys as keys
@@ -25,7 +27,6 @@ import mingus.core.scales as scales
 # Other Modules
 from datetime import datetime
 import os
-import sys
 import warnings
 import traceback
 import pickle
@@ -35,41 +36,64 @@ class MusicGenerator(object):
     A magical deity capable of generating music based on a predefined style
     '''
 
-    def __init__(self, style, composition_title='Untitled',
+    def __init__(self, style_probs=None, composition_title='Untitled',
                  author_name='By: Al Gogh Rhythm'):
         '''
         Constructor
+
+        :param style: A Style object to represent a certain musical style. Holds
+                      the probabilities for scales, keys, note timings, modes, etc.
+        :param composition_title: Title for the work, used for generated files
+        :param author_name: Name of the author, used for generated files
         '''
         self.composition = mingus_composition.Composition()
 
-        self.style = style
-        self.composition.title = composition_title
-        self.composition.author = author_name
+        # If StyleProbs not provided, use default
+        if style_probs is None:
+            self.style_probs = StyleProbs(style.DEFAULT_CFG_FILE)
+        else:
+            self.style_probs = style_probs
 
-        self.__time_signature = choice.choose_time_signature(self.style)
-        self.__key = choice.choose_key(self.style.probabilities['keys'])
+        self.composition_title = composition_title
+        self.author_name = author_name
+
+        self._time_signature = choice.choose_time_signature(self.style_probs)
+        self._key = choice.choose_key(self.style_probs.probabilities['keys'])
 
     def add_melody_track(self, num_bars, location_to_add=1, style=None,
                          times_to_repeat=0, octave_adjust=0):
         '''
         Adds a mingus Track containing bars of randomly generated melodies to
         the composition.
+
+        :param num_bars: The number of bars to add to the track
+        :param location_to_add: Bar in the track to start adding new bars (+ int, starts at 1)
+        :param style: The musical Style for the track, overrides the generator's
+        :param times_to_repeat: Times to repeat the num_bars (+ int)
+        :param octave_adjust: Adjustment of the octave of notes in the generated bars (+/- int)
         '''
 
         if style is None:
-            style = self.style
+            style = self.style_probs
 
-        key = self.__key
-        major_key_bool = key.istitle()
+        # Input validation
+        if location_to_add < 1:
+            raise AttributeError('Cannot add a track at location ' + str(location_to_add))
+        if times_to_repeat < 0:
+            raise AttributeError(str(times_to_repeat) + ' is not a valid positive number for times_to_repeat.')
 
+        # Check if it's a major key
+        major_key_bool = self._key.istitle()
+
+        # Add a track with the given style
         melody_track = track.Track(style=style)
 
         # Determine scale based on key
         if major_key_bool:
-            scale = choice.choose_scale(key, style.probabilities['major_scales'])
+            scale = choice.choose_scale(self._key, style.probabilities['major_scales'])
         else:
             # Only accepts all uppercase when determining scale from key
-            key = key.upper()
+            key = self._key.upper()
             scale = choice.choose_scale(key, style.probabilities['minor_scales'])
 
         for _ in range(0, num_bars):
@@ -79,13 +103,18 @@ class MusicGenerator(object):
             # Determine number notes in melody
             number_notes = time.get_notes_in_timing(melody_timing)
 
+            if octave_adjust != 0:
+                # Adjust octave
+                melody_timing = convert.change_octave(number_notes,
+                                                      octave_adjust)
+
             # Choose notes for melody based on scale for given key
             chosen_notes = choice.choose_notes(number_notes, scale)
 
             # Combine melody time and notes into a mingus Bar object
-            bar_to_add = convert.convert_notes_to_bar(self.__key, melody_timing,
+            bar_to_add = convert.convert_notes_to_bar(self._key, melody_timing,
                                                       chosen_notes,
-                                                      self.__time_signature)
+                                                      self._time_signature)
 
             #print('TESTING STUFF...')
             #print(bar_to_add.determine_chords(shorthand=True))
@@ -105,22 +134,36 @@ class MusicGenerator(object):
 
         self.composition.add_track(melody_track)
 
-    def add_chords_track(self, num_bars=None, location_to_add=0, style=None,
+    def add_chords_track(self, num_bars=None, location_to_add=1, style=None,
                          melody_track=None, times_to_repeat=0, octave_adjust=0,
                          force_mode_scale=False):
         '''
         Adds a track to the composition filled with chords
+
+        :param num_bars: The number of bars to add to the track
+        :param location_to_add: Bar in the track to start adding new bars
+        :param style: The musical Style for the track
+        :param melody_track: Melody track to base the chords track off of TODO: Unused
+        :param times_to_repeat: Times to repeat the num_bars
+        :param octave_adjust: Adjustment of the octave of notes in the generated bars
+        :param force_mode_scale: Force a certain mode for a scale TODO: Unused
         TODO: Create chord length other than all whole notes
         '''
 
         if style is None:
-            style = self.style
+            style = self.style_probs
+
+        # Input validation
+        if location_to_add < 1:
+            raise AttributeError('Cannot add a track at location ' + str(location_to_add))
+        if times_to_repeat < 0:
+            raise AttributeError(str(times_to_repeat) + ' is not a valid positive number for times_to_repeat.')
 
         # Create chord progression
         progression_probs = style.probabilities['progressions']
 
         if force_mode_scale:
-            # Do something with mode?
+            # TODO: Do something with mode?
             pass
         else:
             pass
@@ -163,16 +206,16 @@ class MusicGenerator(object):
             raw_chord_progression = choice.choose_chord_progression(progression_probs)
 
         chord_progression_notes = progressions.to_chords(raw_chord_progression,
-                                                         self.__key)
+                                                         self._key)
 
         # Adjust octave
         chord_progression = convert.change_octave(chord_progression_notes,
                                                   octave_adjust)
 
         # Convert it to a mingus track
-        chord_track = convert.convert_chord_progression_to_track(self.__key, chord_progression,
-                                                                 self.__time_signature)
-        chord_track.style = style
+        chord_track = convert.convert_chord_progression_to_track(self._key, chord_progression,
+                                                                 self._time_signature)
+        chord_track.style_probs = style
 
         # Repeat chords per argument
         chord_track.bars += chord_track.bars * times_to_repeat
@@ -188,42 +231,50 @@ class MusicGenerator(object):
     def remove_track(self, index=None):
         '''
         Removes a track from the composition
+
+        :param index: Index of track in composition track list to remove
         '''
         # If no index is specified, remove last track
         if index is None:
             index = len(self.composition.tracks) - 1
 
-        if index >= len(self.composition.tracks):
-            raise IndexError('Provided index for track in composition is out' +
-                             ' of bounds.')
+        if index >= len(self.composition.tracks) or index < 0:
+            raise IndexError('Cannot remove track at index ' + str(index) + ' because '
+                             'that index is out of bounds.')
 
         self.composition.tracks.pop(index)
 
     def set_time_signature(self, time_signature):
         '''
         Set the time signature for the composition.
+
+        :param time_signature: The musical time signature to set for a composition. Format: (3,4) for 3/4, (4,4) for 4/4, etc.
         '''
         if meter.is_valid(time_signature):
-            self.__time_signature = time_signature
+            self._time_signature = time_signature
         else:
-            warnings.warn(time_signature + ' is not a valid time signature.',
-                          UserWarning)
-            traceback.print_stack()
+            raise AttributeError(str(time_signature) + ' is not a valid time signature.',
+                                 UserWarning)
 
     def set_key(self, key):
         '''
         Set the key for the composition. Will randomly choose key by using the
         probabilities in configuration file if one is not provided
+
+        :param key: Musical key to use
         '''
         if keys.is_valid_key(key):
-            self.__key = key
+            self._key = key
         else:
-            warnings.warn(key + ' is not a valid key.', UserWarning)
-            traceback.print_stack()
+            raise AttributeError(str(key) + ' is not a valid key.', UserWarning)
 
     def export_pdf(self, file_path):
         '''
         Outputs a pdf to a specified path
+
+        :param file_path: Path to the file to generate. Put \\ at end to use
+                          default naming in directory specified. Otherwise
+                          provide full path. DO NOT use relative pathing.
         '''
         if file_path is None:
             warnings.warn('PDF not generated. Please specify valid path.',
@@ -231,39 +282,27 @@ class MusicGenerator(object):
             traceback.print_stack()
             return
 
-        if file_path.endswith('/') or file_path.endswith('\\'):
-            # Get this directory and go up one
-            script_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-            file_path = os.path.normpath(os.path.join(script_path, file_path))
-            # Make folder if necessary
-            if not os.path.exists(file_path):
-                os.makedirs(file_path)
-
-            # Create filename based on key and time
-            file_path = (file_path + '\\' +
-                         str(datetime.now()).replace(' ', '_').replace(':', '.'))
-        else:
-            file_path = os.path.abspath(file_path)
-
-            # Make folder if necessary
-            dir_path = os.path.dirname(file_path)
-            if not os.path.isdir(dir_path):
-                os.makedirs(dir_path)
+        # Lilypond doesn't like it if the file path already ends in .pdf
+        file_path = MusicGenerator._create_file_path(file_path, '')
 
         # Output the pdf score
         ly_string = LilyPond.from_Composition(self.composition)
         if ly_string and self.composition.tracks:
             LilyPond.to_pdf(ly_string, file_path)
         else:
-            warnings.warn('PDF not generated because the composition didn\'t' +
+            warnings.warn('PDF not generated because the composition didn\'t ' +
                           'have any tracks. :(', UserWarning)
             traceback.print_stack()
 
-        return file_path
+        return file_path + '.pdf'
 
     def export_midi(self, file_path, bpm=100, repeat=0, verbose=False):
         '''
         Outputs a midi to a specified path
+
+        :param file_path: Path to the file to generate. Put \\ at end to use
+                          default naming in directory specified. Otherwise
+                          provide full path. DO NOT use relative pathing.
         '''
         if file_path is None:
             warnings.warn('MIDI not generated. Please specify valid path.',
@@ -271,25 +310,7 @@ class MusicGenerator(object):
             traceback.print_stack()
             return
 
-        if file_path.endswith('/') or file_path.endswith('\\'):
-            # Get this directory and go up one
-            script_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-            file_path = os.path.normpath(os.path.join(script_path, file_path))
-            # Make folder if necessary
-            if not os.path.exists(file_path):
-                os.makedirs(file_path)
-
-            # Create filename based on key and time
-            file_path = (file_path + '\\' +
-                         str(datetime.now()).replace(' ', '_').replace(':', '.') +
-                         '.mid')
-        else:
-            file_path = os.path.abspath(file_path)
-
-            # Make folder if necessary
-            dir_path = os.path.dirname(file_path)
-            if not os.path.isdir(dir_path):
-                os.makedirs(dir_path)
+        file_path = MusicGenerator._create_file_path(file_path, 'mid')
 
         # Output a midi file
         if self.composition is not None and self.composition.tracks:
@@ -305,6 +326,10 @@ class MusicGenerator(object):
     def export_pickle(self, file_path, protocol_to_use=pickle.HIGHEST_PROTOCOL):
         '''
         Outputs a python pickled object to a specified path
+
+        :param file_path: Path to the file to generate. Put \\ at end to use
+                          default naming in directory specified. Otherwise
+                          provide full path. DO NOT use relative pathing.
         '''
         if file_path is None or file_path == '':
             warnings.warn('Pickle not generated. Please specify valid path.',
@@ -312,7 +337,29 @@ class MusicGenerator(object):
             traceback.print_stack()
             return
 
+        file_path = MusicGenerator._create_file_path(file_path, 'pkl')
+
+        with open(file_path, 'wb') as file:
+            pickle.dump(self, file, protocol=protocol_to_use)
+
+        return file_path
+
+    @staticmethod
+    def _create_file_path(file_path, file_extension=None):
+        '''
+        Returns a file path and creates folders if necessary. If a path is given,
+        a filename is generated using current time and file_extension provided is
+        appended.
+
+        :param file_path: Path to filename with extension or path to directory
+        :param file_extension: Extension for file if file_path is a dir. Ex: pdf
+        '''
+        if file_path is None or file_path == '':
+            return None
+
         if file_path.endswith('/') or file_path.endswith('\\'):
+            if file_extension is None:
+                raise AttributeError('Provide file_extension if only providing path')
             # Get this directory and go up one
             script_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
             file_path = os.path.normpath(os.path.join(script_path, file_path))
@@ -323,7 +370,7 @@ class MusicGenerator(object):
             # Create filename based on key and time
             file_path = (file_path + '\\' +
                          str(datetime.now()).replace(' ', '_').replace(':', '.') +
-                         '.pkl')
+                         '.' + file_extension)
         else:
             file_path = os.path.abspath(file_path)
 
@@ -332,24 +379,47 @@ class MusicGenerator(object):
             if not os.path.isdir(dir_path):
                 os.makedirs(dir_path)
 
-        with open(file_path, 'wb') as file:
-            pickle.dump(self, file, protocol=protocol_to_use)
-
         return file_path
 
-    @staticmethod
-    def from_pickle(pickle_file_name):
-        pkl_file = open(pickle_file_name, 'rb')
-        music_generator = pickle.load(pkl_file)
-        return music_generator
+    def _create_melody_timing(self, note_timing_prob_list):
+        '''
+        Returns a list of note lengths representing the time of a melody for a
+        single bar.
+
+        :param note_timing_prob_list: List of tuples with note timings and
+                                      associated probabilities
+        '''
+        melody_bar = []
+
+        # If valid time signature is supplied, use it to craft melody, otherwise
+        # use common time
+        if not meter.is_valid(self._time_signature):
+            raise AttributeError('Time signature: ' + self._time_signature +
+                                 ' cannot be converted to a mingus meter. ' +
+                                 'Use tuple (#, #) format. Ex: (4, 4)')
+        else:
+            remaining_time_in_bar = time.get_time_remaining(melody_bar,
+                                                            self._time_signature)
+
+            # Continue getting note progressions as long as there's room in bar
+            while (remaining_time_in_bar > 0.0):
+                next_timing = choice.choose_next_timing(remaining_time_in_bar,
+                                                        note_timing_prob_list)
+
+                melody_bar.append(next_timing)
+
+                remaining_time_in_bar = time.get_time_remaining(melody_bar,
+                                                                self._time_signature)
+
+        return melody_bar
 
     def __str__(self):
         '''
         Returns a string representation of the class.
         '''
         output = ''
-        output += 'Time Signature: ' + str(self.__time_signature) + '\n'
-        output += '           Key: ' + str(self.__key) + '\n'
+        output += 'Time Signature: ' + str(self._time_signature) + '\n'
+        output += '           Key: ' + str(self._key) + '\n'
         output += '\n'
 
         if self.composition is not None:
@@ -359,7 +429,7 @@ class MusicGenerator(object):
 
                 output += ('================================== TRACK ' +
                            str(index) + ' ')
-                output += '=' * (35 - len(str(index)))
+                output += '=' * (38 - len(str(index)))
                 output += '\n'
 
                 for index, bar in enumerate(track):
@@ -370,52 +440,32 @@ class MusicGenerator(object):
                                str(index) + ' ')
                     # Adjust line based on size of index (ex: two less '-' for
                     # 2-digit number)
-                    output += '-' * (36 - len(str(index)))
+                    output += '-' * (39 - len(str(index)))
                     output += '\n'
                     output += str(bar) + '\n'
 
         output += ('--------------------------------------------------------' +
-                   '---------------------\n')
+                   '------------------------\n')
         return output
 
-    def _create_melody_timing(self, note_timing_dict):
-        '''
-        Returns a list of note lengths representing the time of a melody for a
-        single bar.
-        '''
-        melody_bar = []
-
-        # If valid time signature is supplied, use it to craft melody, otherwise
-        # use common time
-        if not meter.is_valid(self.__time_signature):
-            raise AttributeError('Time signature: ' + self.__time_signature +
-                                 ' cannot be converted to a mingus meter. ' +
-                                 'Use tuple (#, #) format. Ex: (4, 4)')
-        else:
-            remaining_time_in_bar = time.get_time_remaining(melody_bar,
-                                                            self.__time_signature)
-
-            # Continue getting note progressions as long as there's room in bar
-            while (remaining_time_in_bar > 0.0):
-                next_timing = choice.choose_next_timing(remaining_time_in_bar,
-                                                        note_timing_dict)
-
-                melody_bar.append(next_timing)
-
-                remaining_time_in_bar = time.get_time_remaining(melody_bar,
-                                                                self.__time_signature)
-
-        return melody_bar
+    @staticmethod
+    def from_pickle(pickle_file_name):
+        pkl_file = open(pickle_file_name, 'rb')
+        music_generator = pickle.load(pkl_file)
+        return music_generator
 
     @staticmethod
     def _repeat_chords_track(raw_chord_progression, times_to_repeat):
         '''
         Returns an extended raw chord list which is the original repeated a
         number of times
+
+        :param raw_chord_progression: List of notes representing chord progression
+        :param times_to_repeat: How many times to repeat the chords
         '''
         # Repeat chords per argument
         extended_chord_progression = []
-        for index in range(0, times_to_repeat):
+        for _ in range(0, times_to_repeat):
             for item in raw_chord_progression:
                 extended_chord_progression.append(item)
         return extended_chord_progression

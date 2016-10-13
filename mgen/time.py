@@ -1,7 +1,7 @@
 '''
 Created on May 11, 2016
 
-@author: Alex VanTol
+@author: Alexander VanTol
 '''
 
 # Mingus modules
@@ -13,6 +13,8 @@ import mingus.core.value as value
 def get_notes_length(list_of_note_values):
     '''
     Return the total musical length of a list of note lengths
+
+    :param list_of_note_values: List of note timings
     '''
     total_time = 0.0
 
@@ -24,6 +26,8 @@ def get_notes_length(list_of_note_values):
 def get_notes_in_timing(timing):
     '''
     Return how many notes are in the given list of note timings.
+
+    :param timing: List of note timings
     '''
     counter = 0
     for notes in timing:
@@ -34,6 +38,9 @@ def get_time_remaining(melody_bar, time_signature=meter.common_time):
     '''
     Return the remaining musical time in the given bar for the given time
     signature.
+
+    :param melody_bar: The musical bar
+    :param time_signature: Time signature for the bar
     '''
     # Get information from time signature
     beats_in_measure = time_signature[0]
@@ -50,8 +57,14 @@ def get_time_remaining(melody_bar, time_signature=meter.common_time):
     return (total_time - time_in_measure)
 
 def prepend_empty_bars_to_track(track, num_bars):
+    '''
+    Return a track with empty bars at the beginning
+
+    :param track: The musical track
+    :param num_bars: Number of empty bars to preprend
+    '''
     empty_bar = bar.Bar()
     empty_bar.place_rest(value.whole)
-    for index in range(0, num_bars):
+    for _ in range(0, num_bars):
         track.bars.insert(0, empty_bar)
     return track

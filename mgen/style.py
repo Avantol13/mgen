@@ -1,26 +1,29 @@
 '''
 Created on Apr 27, 2016
 
-@author: Alex VanTol
+@author: Alexander VanTol
 '''
 
 # Other Modules
 import ConfigParser
-import os
+import config
 
-# Configuration
-_PATH_TO_SCRIPT = os.path.dirname(os.path.abspath(__file__))
-DEFAULT = _PATH_TO_SCRIPT + '/../styles/default.cfg'
-JAZZ    = _PATH_TO_SCRIPT + '/../styles/jazz.cfg'
+DEFAULT_CFG_FILE = config._PATH_TO_SCRIPT + '/../styles/default.cfg'
+JAZZ_CFG_FILE    = config._PATH_TO_SCRIPT + '/../styles/jazz.cfg'
 
-class Style(object):
+# TODO: Make the object actually have the dicts and have a static method to
+#       create an object based on a probabilities file
+class StyleProbs(object):
     '''
-    classdocs
+    A representation of a certain musical style. Holds the probabilities for
+    scales, keys, note timings, modes, etc.
     '''
 
     def __init__(self, probabilities_file):
         '''
         Constructor
+
+        :param probabilities_file: Cfg file to get probabilities from
         '''
         self.probabilities = dict()
         self.parse_probabilities_file(probabilities_file)
@@ -28,6 +31,9 @@ class Style(object):
     def parse_probabilities_file(self, file_name):
         '''
         Parses the .cfg file to retrieve all the probabilities
+
+        :param file_name: Cfg file to get probabilities from
+
         TODO: Add a check to make sure all probabilities in a section add up to 1.0
         '''
         config_parser = ConfigParser.ConfigParser()
