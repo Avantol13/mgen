@@ -6,6 +6,7 @@ Created on Sep 14, 2016
 import pytest
 from mgen import MusicGenerator
 from mgen import StyleProbs
+from mgen import config
 import mgen
 import os
 
@@ -276,60 +277,60 @@ def test_set_valid_key():
     assert music_generator._key == key
 
 def test_export_pdf():
-    filename = 'test_export_pdf.pdf'
+    filename = 'test_export_pdf'
     music_generator = MusicGenerator()
     music_generator.add_melody_track(num_bars=4)
-    music_generator.export_pdf(filename)
-    assert os.path.isfile(filename)
-    os.remove(filename)
+    resulting_path = music_generator.export_pdf(filename)
+    assert os.path.isfile(resulting_path)
+    os.remove(resulting_path)
 
 def test_export_pdf_path():
     path = 'tests/test_path/pdf'
-    filename = path + '/test_export_pdf.pdf'
+    filename = path + '/test_export_pdf'
     music_generator = MusicGenerator()
     music_generator.add_melody_track(num_bars=4)
-    music_generator.export_pdf(filename)
+    resulting_path = music_generator.export_pdf(filename)
     assert os.path.isdir(path)
-    assert os.path.isfile(filename)
-    os.remove(filename)
+    assert os.path.isfile(resulting_path)
+    os.remove(resulting_path)
     os.rmdir(path)
 
 def test_export_midi():
     filename = 'test_export_midi.mid'
     music_generator = MusicGenerator()
     music_generator.add_melody_track(num_bars=4)
-    music_generator.export_midi(filename)
-    assert os.path.isfile(filename)
-    os.remove(filename)
+    resulting_path = music_generator.export_midi(filename)
+    assert os.path.isfile(resulting_path)
+    os.remove(resulting_path)
 
 def test_export_midi_path():
     path = 'tests/test_path/midi'
     filename = path + '/test_export_midi.mid'
     music_generator = MusicGenerator()
     music_generator.add_melody_track(num_bars=4)
-    music_generator.export_midi(filename)
+    resulting_path = music_generator.export_midi(filename)
     assert os.path.isdir(path)
-    assert os.path.isfile(filename)
-    os.remove(filename)
+    assert os.path.isfile(resulting_path)
+    os.remove(resulting_path)
     os.rmdir(path)
 
 def test_export_pickle():
     filename = 'test_export_pkl.pkl'
     music_generator = MusicGenerator()
     music_generator.add_melody_track(num_bars=4)
-    music_generator.export_pickle(filename)
-    assert os.path.isfile(filename)
-    os.remove(filename)
+    resulting_path = music_generator.export_pickle(filename)
+    assert os.path.isfile(resulting_path)
+    os.remove(resulting_path)
 
 def test_export_pickle_path():
     path = 'tests/test_path/pkl'
     filename = path + '/test_export_pkl.pkl'
     music_generator = MusicGenerator()
     music_generator.add_melody_track(num_bars=4)
-    music_generator.export_pickle(filename)
+    resulting_path = music_generator.export_pickle(filename)
     assert os.path.isdir(path)
-    assert os.path.isfile(filename)
-    os.remove(filename)
+    assert os.path.isfile(resulting_path)
+    os.remove(resulting_path)
     os.rmdir(path)
 
 def test_from_pickle():
@@ -337,9 +338,9 @@ def test_from_pickle():
     music_generator = MusicGenerator()
     music_generator.add_melody_track(num_bars=4)
     music_generator.add_melody_track(num_bars=7)
-    music_generator.export_pickle(filename)
+    resulting_path = music_generator.export_pickle(filename)
 
-    from_the_grave = MusicGenerator.from_pickle(filename)
+    from_the_grave = MusicGenerator.from_pickle(resulting_path)
 
     assert len(from_the_grave.composition.tracks) == 2
     assert len(from_the_grave.composition.tracks[0].bars) == 4
