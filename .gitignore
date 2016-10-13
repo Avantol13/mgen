@@ -3,8 +3,9 @@
 *.mid
 *.pkl
 
-# Eclipse settings for PyDev
+# Eclipse settings
 .settings/
+.metadata/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
