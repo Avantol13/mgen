@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/Avantol13/mgen.svg?branch=master)](https://travis-ci.org/Avantol13/mgen)
+[![Coverage Status](https://coveralls.io/repos/github/Avantol13/mgen/badge.svg?branch=master)](https://coveralls.io/github/Avantol13/mgen?branch=master)
 
 Music Generator (mgen)
 ======================

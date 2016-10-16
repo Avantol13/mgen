@@ -10,4 +10,4 @@ script:
     - coverage run --branch --source mgen -m py.test
 
 after_success:
-    - coveralls --config_file .coveragerc
+    - coveralls
