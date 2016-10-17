@@ -114,7 +114,7 @@ def parse_args(args):
                         help='Bar in the composition to add the tracks to. ' +
                         ' For example, --start_bar 9 will generate tracks ' +
                         'beginning at the 9th bar.',
-                        nargs='?', default=0)
+                        nargs='?', default=1)
     parser.add_argument('-r', '--repeat_tracks', type=int,
                         help='Will repeat the specified tracks the amount ' +
                         'of times specified.',
