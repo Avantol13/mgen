@@ -49,34 +49,6 @@ def convert_notes_to_bar(musical_key, melody_timing, chosen_notes,
 
     return mingus_bar
 
-def convert_to_scale(key, scale):
-    '''
-    Returns a scale of notes given a key.
-
-    :param key: The musical key
-    :param scale: Unused
-
-    TODO: Different scales? Add configuration for different scales.
-    '''
-    notes_in_scale = []
-
-    # Remove key information
-    key = key.replace(' ', '')
-
-    major_key_bool = key.istitle()
-
-    try:
-        if major_key_bool:
-            notes_in_scale = scales.Ionian(key).ascending()
-        else:
-            key = key.upper()
-            notes_in_scale = scales.NaturalMinor(key).ascending()
-    except Exception:
-        raise AttributeError('Key: ' + key + ' cannot be converted to a' +
-                             ' mingus scale. Use # and b for sharp and flat.')
-
-    return notes_in_scale
-
 def convert_chord_progression_to_track(key, chord_progression,
                                        time_signature=meter.common_time,
                                        chord_timing=None):
@@ -106,12 +78,44 @@ def convert_chord_progression_to_track(key, chord_progression,
 
     return new_track
 
-def change_octave(note_timings, octave_change):
+def change_notes_octave(notes, octave_change):
     '''
     Returns note timing with octave change based on value for octave_change
-    (ex: change_octave(note_timings, -1))
+    (ex: change_chords_octave(notes, -1))
 
-    :param note_timings: List of notes/chords to change octave of
+    :param notes: List of notes to change octave of
+    :param octave_change: Integer to shift octave by. Positive is up, negative is down
+    '''
+    new_note_timings = []
+
+    # For every note in the timing/chord, change octave
+    for given_note in notes:
+        new_note = note.Note(given_note)
+        octave_change_temp = octave_change
+
+        if octave_change > 0:
+            while(octave_change_temp > 0):
+                new_note.octave_up()
+                octave_change_temp -= 1
+        elif octave_change < 0:
+            while(octave_change_temp < 0):
+                new_note.octave_down()
+                octave_change_temp += 1
+        else:
+            # Do nothing
+            pass
+
+        # Append the altered note
+        new_note_timings.append(new_note)
+
+    return new_note_timings
+
+def change_chords_octave(note_timings, octave_change):
+    '''
+    Returns note timing with octave change based on value for octave_change
+    (ex: change_chords_octave(note_timings, -1))
+
+    :param note_timings: List of chords to change octave of
     :param octave_change: Integer to shift octave by. Positive is up, negative is down
     '''
     new_note_timings = []

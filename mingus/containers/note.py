@@ -108,7 +108,7 @@ class Note(object):
         """Call notes.diminish with this note as argument."""
         self.name = notes.diminish(self.name)
 
-    def change_octave(self, diff):
+    def change_chords_octave(self, diff):
         """Change the octave of the note to the current octave + diff."""
         self.octave += diff
         if self.octave < 0:
@@ -116,11 +116,11 @@ class Note(object):
 
     def octave_up(self):
         """Increment the current octave with 1."""
-        self.change_octave(1)
+        self.change_chords_octave(1)
 
     def octave_down(self):
         """Decrement the current octave with 1."""
-        self.change_octave(-1)
+        self.change_chords_octave(-1)
 
     def remove_redundant_accidentals(self):
         """Call notes.remove_redundant_accidentals on this note's name."""
