@@ -277,8 +277,7 @@ def test_set_valid_key():
     assert music_generator._key == key
 
 def test_export_pdf():
-    filename = os.path.abspath(config._PATH_TO_SCRIPT +
-                               "/../dev/unittests/" + "test_export_pdf.pdf")
+    filename = "test_export_pdf.pdf"
     music_generator = MusicGenerator()
     music_generator.add_melody_track(num_bars=4)
     music_generator.export_pdf(filename)
@@ -288,7 +287,7 @@ def test_export_pdf():
 def test_export_pdf_path():
     path = os.path.abspath(config._PATH_TO_SCRIPT +
                            "/../dev/unittests/tests/test_path/pdf")
-    filename = path + "/test_export_pdf.pdf"
+    filename = os.path.abspath(path + "/test_export_pdf.pdf")
     music_generator = MusicGenerator()
     music_generator.add_melody_track(num_bars=4)
     music_generator.export_pdf(filename)
@@ -298,8 +297,7 @@ def test_export_pdf_path():
     os.rmdir(path)
 
 def test_export_midi():
-    filename = os.path.abspath(config._PATH_TO_SCRIPT +
-                               "/../dev/unittests/" + "test_export_midi.mid")
+    filename = "test_export_midi.mid"
     music_generator = MusicGenerator()
     music_generator.add_melody_track(num_bars=4)
     music_generator.export_midi(filename)
@@ -309,7 +307,7 @@ def test_export_midi():
 def test_export_midi_path():
     path = os.path.abspath(config._PATH_TO_SCRIPT +
                            "/../dev/unittests/tests/test_path/midi")
-    filename = path + "/test_export_midi.mid"
+    filename = os.path.abspath(path + "/test_export_midi.mid")
     music_generator = MusicGenerator()
     music_generator.add_melody_track(num_bars=4)
     music_generator.export_midi(filename)
@@ -319,8 +317,7 @@ def test_export_midi_path():
     os.rmdir(path)
 
 def test_export_pickle():
-    filename = os.path.abspath(config._PATH_TO_SCRIPT +
-                               "/../dev/unittests/" + "test_export_pkl.pkl")
+    filename = "test_export_pkl.pkl"
     music_generator = MusicGenerator()
     music_generator.add_melody_track(num_bars=4)
     music_generator.export_pickle(filename)
@@ -330,7 +327,7 @@ def test_export_pickle():
 def test_export_pickle_path():
     path = os.path.abspath(config._PATH_TO_SCRIPT +
                            "/../dev/unittests/tests/test_path/pkl")
-    filename = path + "/test_export_pkl.pkl"
+    filename = os.path.abspath(path + "/test_export_pkl.pkl")
     music_generator = MusicGenerator()
     music_generator.add_melody_track(num_bars=4)
     music_generator.export_pickle(filename)
