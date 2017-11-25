@@ -1,7 +1,9 @@
 '''
-It is better to create than to learn! Creating is the essence of life.
-    - Julius Caesar
+Created on Apr 25, 2016
+
+@author: Alexander VanTol
 '''
+
 # Project Modules
 from mgen import convert
 from mgen import time
@@ -33,6 +35,7 @@ class MusicGenerator(object):
     '''
     A magical deity capable of generating music based on a predefined style
     '''
+
     def __init__(self, style_probs=None, composition_title='Untitled',
                  author_name='By: Al Gogh Rhythm'):
         '''
@@ -144,7 +147,6 @@ class MusicGenerator(object):
         :param times_to_repeat: Times to repeat the num_bars
         :param octave_adjust: Adjustment of the octave of notes in the generated bars
         :param force_mode_scale: Force a certain mode for a scale TODO: Unused
-
         TODO: Create chord length other than all whole notes
         '''
 
@@ -281,7 +283,9 @@ class MusicGenerator(object):
             return
 
         # Lilypond doesn't like it if the file path already ends in .pdf
-        file_path.replace(".pdf", "")
+        if file_path.lower()[-4:] == '.pdf':
+            file_path = file_path[:-4]
+
         file_path = MusicGenerator._create_file_path(file_path, '')
 
         # Output the pdf score
@@ -356,12 +360,12 @@ class MusicGenerator(object):
         if file_path is None or file_path == '':
             return None
 
+        file_path = file_path.lower().strip()
+
         if file_path.endswith('/') or file_path.endswith('\\'):
             if file_extension is None:
-                raise AttributeError('Provide file_extension if only providing path')
-            # Get this directory and go up one
-            script_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-            file_path = os.path.normpath(os.path.join(script_path, file_path))
+                raise AttributeError('Provide file_extension if only providing path: ' + file_path)
+
             # Make folder if necessary
             if not os.path.exists(file_path):
                 os.makedirs(file_path)
