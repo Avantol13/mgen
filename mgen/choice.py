@@ -1,7 +1,6 @@
 '''
-Created on May 11, 2016
-
-@author: Alexander VanTol
+It is our choices... that show what we truly are, far more than our abilities.
+    - J. K. Rowling
 '''
 
 # Project Modules
@@ -11,13 +10,41 @@ from mgen import time
 import mingus.core.meter as meter
 import mingus.core.keys as keys
 
-# Need scales and value import for eval() purposes, DON'T REMOVE
-import mingus.core.scales as scales
 import mingus.core.value as value
+import mingus.core.scales as scales
 
 # Other Modules
 import random
 import warnings
+
+MINGUS_TIMING_LOOKUP = {
+    "whole": value.whole,
+    "half": value.half,
+    "quarter": value.quarter,
+    "eighth": value.eighth,
+    "sixteenth": value.sixteenth,
+    "thirty_second": value.sixteenth,
+    "sixty_fourth": value.sixteenth,
+    "hundred_twenty_eighth": value.sixteenth,
+}
+
+MINGUS_SCALES_LOOKUP = {
+    "Ionian": (lambda key: scales.Ionian(key)),
+    "Dorian": (lambda key: scales.Dorian(key)),
+    "Phrygian": (lambda key: scales.Phrygian(key)),
+    "Lydian": (lambda key: scales.Lydian(key)),
+    "Mixolydian": (lambda key: scales.Mixolydian(key)),
+    "Aeolian": (lambda key: scales.Aeolian(key)),
+    "Locrian": (lambda key: scales.Locrian(key)),
+    "Major": (lambda key: scales.Major(key)),
+    "HarmonicMajor": (lambda key: scales.HarmonicMajor(key)),
+    "NaturalMinor": (lambda key: scales.NaturalMinor(key)),
+    "HarmonicMinor": (lambda key: scales.HarmonicMinor(key)),
+    "MelodicMinor": (lambda key: scales.MelodicMinor(key)),
+    "Bachian": (lambda key: scales.Bachian(key)),
+    "MinorNeapolitan": (lambda key: scales.MinorNeapolitan(key)),
+}
+
 
 def choose_scale(key, scale_prob_list, choice=None):
     '''
@@ -36,13 +63,15 @@ def choose_scale(key, scale_prob_list, choice=None):
     for scale, prob in scale_prob_list:
         # Subtract the probability from the choice
         choice = choice - float(prob)
-        scale_instance = eval(scale)(key)
+        scale_instance = MINGUS_SCALES_LOOKUP.get(scale,
+                                                  (lambda key: scales.HarmonicMajor(key)))(key)
 
         # When it reaches zero, we've hit our choice
         if choice <= 0:
             break
 
     return scale_instance
+
 
 def choose_key(key_prob_list, choice=None):
     '''
@@ -70,11 +99,12 @@ def choose_key(key_prob_list, choice=None):
             break
 
     if keys.is_valid_key(key):
-        return key
+        return str(key)
     else:
         raise AttributeError('Key: ' + key +
                              ' cannot be converted to a mingus scale. ' +
                              'Use # and b for sharp and flat.')
+
 
 def choose_time_signature(time_signature_prob_list, choice=None):
     '''
@@ -96,6 +126,7 @@ def choose_time_signature(time_signature_prob_list, choice=None):
                              ' should be between 0.0 and 1.0')
 
     return meter.common_time
+
 
 def choose_chord_progression(chord_progression_prob_list, choice=None):
     '''
@@ -127,6 +158,7 @@ def choose_chord_progression(chord_progression_prob_list, choice=None):
             break
 
     return chords_list
+
 
 def choose_notes(number_notes, scale, choice=None):
     '''
@@ -160,6 +192,7 @@ def choose_notes(number_notes, scale, choice=None):
             notes.append(None)
 
     return notes
+
 
 def choose_next_timing(remaining_time_in_bar, note_timing_prob_list, choice=None):
     '''
@@ -206,7 +239,7 @@ def choose_next_timing(remaining_time_in_bar, note_timing_prob_list, choice=None
                     parsed_note_timings = timing.split(' ')
                     for item in parsed_note_timings:
                         item = item.replace('\'', '')
-                        note_timing.append(eval(item))
+                        note_timing.append(_get_mingus_timing(item))
 
                     # Length of time The Prospective Chosen One takes up in the bar
                     time_for_choice = time.get_notes_length(note_timing)
@@ -229,3 +262,20 @@ def choose_next_timing(remaining_time_in_bar, note_timing_prob_list, choice=None
         pass
 
     return the_chosen_one
+
+
+def _get_mingus_timing(raw_timing):
+    dotted_indicator = "_dotted"
+    dotted = False
+
+    if raw_timing[-len(dotted_indicator):] == dotted_indicator:
+        dotted = True
+        raw_timing = raw_timing[:-len(dotted_indicator)]
+
+    # default to eight note
+    timing = MINGUS_TIMING_LOOKUP.get(raw_timing, value.eighth)
+
+    if dotted:
+        timing = value.dots(timing)
+
+    return timing

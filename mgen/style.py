@@ -1,24 +1,22 @@
 '''
-Created on Apr 27, 2016
-
-@author: Alexander VanTol
+Style is a reflection of your attitude and your personality.
+    - Shawn Ashmore
 '''
 
 # Other Modules
-import ConfigParser
 import config
+import json
+import operator
+import pprint
 
-DEFAULT_CFG_FILE = config._PATH_TO_SCRIPT + '/../styles/default.cfg'
-JAZZ_CFG_FILE    = config._PATH_TO_SCRIPT + '/../styles/jazz.cfg'
+DEFAULT_CFG_FILE = config._PATH_TO_SCRIPT + '/../styles/default.json'
+JAZZ_CFG_FILE    = config._PATH_TO_SCRIPT + '/../styles/jazz.json'
 
-# TODO: Make the object actually have the dicts and have a static method to
-#       create an object based on a probabilities file
 class StyleProbs(object):
     '''
     A representation of a certain musical style. Holds the probabilities for
     scales, keys, note timings, modes, etc.
     '''
-
     def __init__(self, probabilities_file):
         '''
         Constructor
@@ -36,27 +34,17 @@ class StyleProbs(object):
 
         TODO: Add a check to make sure all probabilities in a section add up to 1.0
         '''
-        config_parser = ConfigParser.ConfigParser()
-
-        # Option here forced case sensitivity during parsing
-        config_parser.optionxform = str
-
         # Attempt to import the cfg file, this could fail if format is wrong
         try:
-            config_parser.readfp(open(file_name))
+            with open(file_name) as data_file:
+                data = json.load(data_file)
         except Exception as exc:
             raise exc
 
         # Parse config data from file
-        for section in config_parser.sections():
-            section_to_add = []
-            for item in config_parser.items(section):
-                # Grab the key and create a list
-                parsed_values = item[1]
-                section_to_add.append((item[0], parsed_values))
-
+        for section, section_items in data.items():
             # Sort it by probability (convert to list)
-            sorted_section = sorted(section_to_add, key=lambda section_to_add: section_to_add[1])
+            sorted_section = sorted(section_items.items(), key=operator.itemgetter(1))
             self.probabilities[section] = sorted_section
 
         if 'progressions' not in self.probabilities.keys():

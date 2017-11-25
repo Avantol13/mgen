@@ -1,7 +1,6 @@
 '''
-Created on May 11, 2016
-
-@author: Alexander VanTol
+The time is always right to do what is right.
+    - Martin Luther King, Jr.
 '''
 
 # Mingus modules
@@ -31,7 +30,8 @@ def get_notes_in_timing(timing):
     '''
     counter = 0
     for notes in timing:
-        counter += len(notes)
+        if notes:
+            counter += len(notes)
     return counter
 
 def get_time_remaining(melody_bar, time_signature=meter.common_time):
@@ -51,8 +51,9 @@ def get_time_remaining(melody_bar, time_signature=meter.common_time):
 
     time_in_measure = 0.0
     for notes in melody_bar:
-        for note in notes:
-            time_in_measure += (1.0 / note)
+        if notes:
+            for note in notes:
+                time_in_measure += (1.0 / note)
 
     return (total_time - time_in_measure)
 

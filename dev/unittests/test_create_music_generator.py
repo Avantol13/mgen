@@ -6,11 +6,8 @@ Created on Sep 14, 2016
 import pytest
 from mgen import MusicGenerator
 from mgen import StyleProbs
-from mgen import config
 import mgen
 import os
-from test._mock_backport import patch
-from test._mock_backport import MagicMock
 
 def setup_module(choice):
     pass
@@ -278,121 +275,61 @@ def test_set_valid_key():
     music_generator.set_key(key)
     assert music_generator._key == key
 
-def test_export_pdf_invalid_path():
-    filename = None
-    music_generator = MusicGenerator()
-    music_generator.add_melody_track(num_bars=4)
-
-    with patch('mingus.extra.lilypond.to_pdf') as lilypond_mock:
-        with patch('warnings.warn') as warn_mock:
-            music_generator.export_pdf(filename)
-
-            assert warn_mock.call_count == 1
-            assert lilypond_mock.call_count == 0
-
-def test_export_pdf_with_extension():
-    # Note: lilypond pdf export has to be called WITHOUT a .pdf extension
+def test_export_pdf():
     filename = 'test_export_pdf.pdf'
     music_generator = MusicGenerator()
     music_generator.add_melody_track(num_bars=4)
-
-    with patch('mingus.extra.lilypond.to_pdf') as lilypond_mock:
-        resulting_path = music_generator.export_pdf(filename)
-
-        assert lilypond_mock.called
-        assert lilypond_mock.call_count == 1
-        # Check first call, second argument (ignore the .pdf file extension)
-        assert lilypond_mock.call_args[0][1] == resulting_path[:-4]
-
-def test_export_pdf_without_extension():
-    # Note: lilypond pdf export has to be called WITHOUT a .pdf extension
-    filename = 'test_export_pdf'
-    music_generator = MusicGenerator()
-    music_generator.add_melody_track(num_bars=4)
-
-    with patch('mingus.extra.lilypond.to_pdf') as lilypond_mock:
-        resulting_path = music_generator.export_pdf(filename)
-
-        assert lilypond_mock.called
-        assert lilypond_mock.call_count == 1
-        # Check first call, second argument (ignore the .pdf file extension)
-        assert lilypond_mock.call_args[0][1] == resulting_path[:-4]
+    music_generator.export_pdf(filename)
+    assert os.path.isfile(filename)
+    os.remove(filename)
 
 def test_export_pdf_path():
-    # Note: lilypond pdf export has to be called WITHOUT a .pdf extension
     path = 'tests/test_path/pdf'
-    filename = path + '/test_export_pdf'
+    filename = path + '/test_export_pdf.pdf'
     music_generator = MusicGenerator()
     music_generator.add_melody_track(num_bars=4)
-
-    with patch('mingus.extra.lilypond.to_pdf') as lilypond_mock:
-        resulting_path = music_generator.export_pdf(filename)
-
-        assert lilypond_mock.called
-        assert lilypond_mock.call_count == 1
-        # Check first call, second argument (ignore the .pdf file extension)
-        assert lilypond_mock.call_args[0][1] == resulting_path[:-4]
-
-def test_export_midi_invalid_path():
-    filename = None
-    music_generator = MusicGenerator()
-    music_generator.add_melody_track(num_bars=4)
-
-    with patch('warnings.warn') as warn_mock:
-        resulting_path = music_generator.export_midi(filename)
-
-        assert warn_mock.call_count == 1
-        # Don't generate file, make sure warning was called
-        assert resulting_path is None
+    music_generator.export_pdf(filename)
+    assert os.path.isdir(path)
+    assert os.path.isfile(filename)
+    os.remove(filename)
+    os.rmdir(path)
 
 def test_export_midi():
     filename = 'test_export_midi.mid'
     music_generator = MusicGenerator()
     music_generator.add_melody_track(num_bars=4)
-    resulting_path = music_generator.export_midi(filename)
-    assert os.path.isfile(resulting_path)
-    os.remove(resulting_path)
+    music_generator.export_midi(filename)
+    assert os.path.isfile(filename)
+    os.remove(filename)
 
 def test_export_midi_path():
     path = 'tests/test_path/midi'
     filename = path + '/test_export_midi.mid'
     music_generator = MusicGenerator()
     music_generator.add_melody_track(num_bars=4)
-    resulting_path = music_generator.export_midi(filename)
+    music_generator.export_midi(filename)
     assert os.path.isdir(path)
-    assert os.path.isfile(resulting_path)
-    os.remove(resulting_path)
+    assert os.path.isfile(filename)
+    os.remove(filename)
     os.rmdir(path)
-
-def test_export_pkl_invalid_path():
-    filename = None
-    music_generator = MusicGenerator()
-    music_generator.add_melody_track(num_bars=4)
-
-    with patch('warnings.warn') as warn_mock:
-        resulting_path = music_generator.export_pickle(filename)
-
-        assert warn_mock.call_count == 1
-        # Don't generate file, make sure warning was called
-        assert resulting_path is None
 
 def test_export_pickle():
     filename = 'test_export_pkl.pkl'
     music_generator = MusicGenerator()
     music_generator.add_melody_track(num_bars=4)
-    resulting_path = music_generator.export_pickle(filename)
-    assert os.path.isfile(resulting_path)
-    os.remove(resulting_path)
+    music_generator.export_pickle(filename)
+    assert os.path.isfile(filename)
+    os.remove(filename)
 
 def test_export_pickle_path():
     path = 'tests/test_path/pkl'
     filename = path + '/test_export_pkl.pkl'
     music_generator = MusicGenerator()
     music_generator.add_melody_track(num_bars=4)
-    resulting_path = music_generator.export_pickle(filename)
+    music_generator.export_pickle(filename)
     assert os.path.isdir(path)
-    assert os.path.isfile(resulting_path)
-    os.remove(resulting_path)
+    assert os.path.isfile(filename)
+    os.remove(filename)
     os.rmdir(path)
 
 def test_from_pickle():
@@ -400,21 +337,15 @@ def test_from_pickle():
     music_generator = MusicGenerator()
     music_generator.add_melody_track(num_bars=4)
     music_generator.add_melody_track(num_bars=7)
-    resulting_path = music_generator.export_pickle(filename)
+    music_generator.export_pickle(filename)
 
-    from_the_grave = MusicGenerator.from_pickle(resulting_path)
+    from_the_grave = MusicGenerator.from_pickle(filename)
 
     assert len(from_the_grave.composition.tracks) == 2
     assert len(from_the_grave.composition.tracks[0].bars) == 4
     assert len(from_the_grave.composition.tracks[1].bars) == 7
 
     os.remove(filename)
-
-def test_to_string():
-    music_generator = MusicGenerator()
-    music_generator.add_melody_track(num_bars=4)
-    music_generator_to_string = music_generator.__str__()
-    assert isinstance(music_generator_to_string, str)
 
 if __name__ == '__main__':
     pytest.main('-v')

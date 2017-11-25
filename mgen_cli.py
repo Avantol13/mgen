@@ -1,4 +1,3 @@
-#!/usr/bin/python2
 '''
 Created on Jan 21, 2016
 
@@ -9,26 +8,23 @@ Created on Jan 21, 2016
 import mgen
 import sys
 import argparse
-from colorama import init
-from colorama import Fore
-from colorama import Style as ColoramaStyle
 import traceback
 import os
 
-def main():
-    # Initialize colorama colored command line output
-    init()
 
+def main():
     my_generator = None
 
     # Parse arguments into script. Note that 1st argument is script name
-    args = parse_args(sys.argv[1:])
+    args = _get_parser(sys.argv[1:]).parse_args()
 
     # If we don't want output, ignore all print statements
     if args.silent:
         # Redirect print output to null device on operating system
         print_redirect = open(os.devnull, 'w')
         sys.stdout = print_redirect
+
+    _setup_cfg(args.cfg_file_path)
 
     print_header()
 
@@ -82,18 +78,19 @@ def main():
     # File exports
     if args.generate_pickle:
         export_location = my_generator.export_pickle(args.generate_pickle)
-        print('Generated PKL file: ' + Fore.GREEN + export_location + Fore.RESET)
+        print('Generated PKL file: ' + export_location)
     if args.generate_pdf:
         export_location = my_generator.export_pdf(args.generate_pdf)
-        print('Generated PDF file: ' + Fore.GREEN + export_location + Fore.RESET)
+        print('Generated PDF file: ' + export_location)
     if args.generate_midi:
         export_location = my_generator.export_midi(args.generate_midi, args.beats_per_minute)
-        print('Generated MIDI file: ' + Fore.GREEN + export_location + Fore.RESET)
+        print('Generated MIDI file: ' + export_location)
 
     print('\n' + str(my_generator))
     print_footer()
 
-def parse_args(args):
+
+def _get_parser(args):
     """
     Returns parsed and validated arguments that were passed into the script.
 
@@ -114,7 +111,7 @@ def parse_args(args):
                         help='Bar in the composition to add the tracks to. ' +
                         ' For example, --start_bar 9 will generate tracks ' +
                         'beginning at the 9th bar.',
-                        nargs='?', default=1)
+                        nargs='?', default=0)
     parser.add_argument('-r', '--repeat_tracks', type=int,
                         help='Will repeat the specified tracks the amount ' +
                         'of times specified.',
@@ -155,27 +152,39 @@ def parse_args(args):
     parser.add_argument('-s', '--silent', help='Silence printing information to command window',
                         action='store_true')
 
-    return parser.parse_args()
+    parser.add_argument("-cfg", "--cfg_file_path",
+                        type=str,
+                        default=os.path.realpath("./cfg/config.py"),
+                        help=("Absolute path to Python file "
+                              "containing necessary configuration "
+                              "values for the tool."))
+
+    return parser
+
+
+def _setup_cfg(cfg_file_path):
+    mgen.cfg_import.set_global_config(cfg_file_path)
+
 
 def print_header():
     """
     Print header of tool into command line.
     """
-    print(ColoramaStyle.BRIGHT + '\n--------------------------------------------------' +
+    print('\n--------------------------------------------------' +
           '------------------------------')
     print('   MUSIC GENERATOR')
     print('-------------------------------------------------------------------' +
-          '-------------\n' + ColoramaStyle.RESET_ALL)
+          '-------------\n')
 
 def print_footer():
     """
     Print footer of tool into command line.
     """
-    print(ColoramaStyle.BRIGHT + '\n--------------------------------------------------' +
+    print('\n--------------------------------------------------' +
           '------------------------------')
     print('   END')
     print('-------------------------------------------------------------------' +
-          '-------------\n' + ColoramaStyle.RESET_ALL)
+          '-------------\n')
 
 def print_error(error=None):
     """
@@ -183,7 +192,7 @@ def print_error(error=None):
 
     :param error: Optional string to print before traceback
     """
-    print(Fore.RED + ColoramaStyle.BRIGHT + '!!!--------------------------------------' +
+    print('!!!--------------------------------------' +
           '------------------------------------!!!\n')
 
     if error is not None:
@@ -192,7 +201,8 @@ def print_error(error=None):
     traceback.print_exc()
 
     print('\n!!!--------------------------------------------------------------' +
-          '------------!!!' + ColoramaStyle.RESET_ALL + '\n')
+          '------------!!!\n')
+
 
 if __name__ == '__main__':
     main()

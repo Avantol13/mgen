@@ -13,7 +13,7 @@
 
 :::::::::::::::::::::::::::::::: CONFIGURATION :::::::::::::::::::::::::::::::::
 :: Path to Python installation
-set PYTHON_PATH="py"
+set PYTHON_PATH=py -2
 
 :: The name for your composition (included in some of the generated files)
 set COMPOSITION_NAME="EXAMPLE"
@@ -34,10 +34,10 @@ set START_BAR=1
 
 :: Path to the "Style", you can create your own following the same format as
 :: those in the "styles" folder
-set STYLE_FILE_PATH="..\styles\default.cfg"
+set STYLE_FILE_PATH="styles\default.json"
 
 :: Path to the main script
-set MUSIC_GENERATOR_CLI="..\main.py"
+set MUSIC_GENERATOR_CLI="mgen_cli.py"
 
 :: -- Different options for file output paths below -- ::
 :: Default directory and name (if no argument specified)
@@ -47,7 +47,7 @@ set PKL_OUTPUT_PATH=
 set MIDI_OUTPUT_PATH="C:\\Temp\\music_generator\\"
 :: Specific directory and filename
 :: NOTE: Don't use relative paths
-set PDF_OUTPUT_PATH="C:\\Temp\\music_generator\\example.pdf"
+set PDF_OUTPUT_PATH="C:\\Temp\\music_generator\\example"
 
 :::::::::::::::::::::::::::::::::: EXECUTION :::::::::::::::::::::::::::::::::::
 %PYTHON_PATH% %MUSIC_GENERATOR_CLI% --style_file_path %STYLE_FILE_PATH%^

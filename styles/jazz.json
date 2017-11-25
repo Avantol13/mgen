@@ -1,0 +1,67 @@
+{
+    "progressions": {
+        "IM7 I7 IVM7 ivm7 iiim VI7 iim V7": "0.10",
+        "IM7 iim7 V7 IVM7": "0.10",
+        "IM7 II7 iim7 IM7": "0.10",
+        "IM7 #Idim7 iim7 #IIdim7 iiim7 VI7": "0.10",
+        "IM7 iim7 V7": "0.10",
+        "IM7 vim7 iim7 V7 iiim7 VI7 iim7 V7": "0.10",
+        "iim7 V7 IM7": "0.40"
+    },
+    "keys": {
+        "eb": "0.009",
+        "ab": "0.012",
+        "c#": "0.021",
+        "c": "0.024",
+        "Eb": "0.024",
+        "f#": "0.025",
+        "d": "0.026",
+        "g": "0.026",
+        "B": "0.026",
+        "F#": "0.027",
+        "f": "0.030",
+        "bb": "0.032",
+        "Bb": "0.035",
+        "E": "0.036",
+        "b": "0.042",
+        "e": "0.042",
+        "Ab": "0.043",
+        "a": "0.048",
+        "F": "0.053",
+        "C#": "0.060",
+        "A": "0.067",
+        "D": "0.097",
+        "C": "0.113",
+        "G": "0.118"
+    },
+    "modes": {
+        "Ionian": "1.0",
+        "Dorian": "0.0",
+        "Phrygian": "0.0",
+        "Lydian": "0.0",
+        "Mixolydian": "0.0",
+        "Aeolian": "0.0",
+        "Locrian": "0.0"
+    },
+    "major_scales": {
+        "Major": "0.0",
+        "HarmonicMajor": "1.0"
+    },
+    "minor_scales": {
+        "NaturalMinor": "0.0",
+        "HarmonicMinor": "0.0",
+        "MelodicMinor": "0.0",
+        "Bachian": "1.0",
+        "MinorNeapolitan": "0.0"
+    },
+    "timings": {
+        "whole": "0.04",
+        "half": "0.20",
+        "quarter": "0.13",
+        "eighth": "0.24",
+        "sixteenth sixteenth": "0.05",
+        "eighth_dotted sixteenth": "0.30",
+        "quarter_dotted quarter_dotted": "0.02",
+        "quarter_dotted eighth eighth": "0.03"
+    }
+}

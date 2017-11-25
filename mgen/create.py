@@ -1,9 +1,7 @@
 '''
-Created on Apr 25, 2016
-
-@author: Alexander VanTol
+It is better to create than to learn! Creating is the essence of life.
+    - Julius Caesar
 '''
-
 # Project Modules
 from mgen import convert
 from mgen import time
@@ -35,7 +33,6 @@ class MusicGenerator(object):
     '''
     A magical deity capable of generating music based on a predefined style
     '''
-
     def __init__(self, style_probs=None, composition_title='Untitled',
                  author_name='By: Al Gogh Rhythm'):
         '''
@@ -103,13 +100,13 @@ class MusicGenerator(object):
             # Determine number notes in melody
             number_notes = time.get_notes_in_timing(melody_timing)
 
-            # Choose notes for melody based on scale for given key
-            chosen_notes = choice.choose_notes(number_notes, scale)
-
             if octave_adjust != 0:
                 # Adjust octave
-                melody_timing = convert.change_notes_octave(chosen_notes,
-                                                            octave_adjust)
+                melody_timing = convert.change_octave(number_notes,
+                                                      octave_adjust)
+
+            # Choose notes for melody based on scale for given key
+            chosen_notes = choice.choose_notes(number_notes, scale)
 
             # Combine melody time and notes into a mingus Bar object
             bar_to_add = convert.convert_notes_to_bar(self._key, melody_timing,
@@ -147,6 +144,7 @@ class MusicGenerator(object):
         :param times_to_repeat: Times to repeat the num_bars
         :param octave_adjust: Adjustment of the octave of notes in the generated bars
         :param force_mode_scale: Force a certain mode for a scale TODO: Unused
+
         TODO: Create chord length other than all whole notes
         '''
 
@@ -205,13 +203,12 @@ class MusicGenerator(object):
         else:
             raw_chord_progression = choice.choose_chord_progression(progression_probs)
 
-        chord_progression = progressions.to_chords(raw_chord_progression,
-                                                   self._key)
+        chord_progression_notes = progressions.to_chords(raw_chord_progression,
+                                                         self._key)
 
-        if octave_adjust != 0:
-            # Adjust octave
-            chord_progression = convert.change_chords_octave(chord_progression,
-                                                             octave_adjust)
+        # Adjust octave
+        chord_progression = convert.change_octave(chord_progression_notes,
+                                                  octave_adjust)
 
         # Convert it to a mingus track
         chord_track = convert.convert_chord_progression_to_track(self._key, chord_progression,
@@ -281,12 +278,10 @@ class MusicGenerator(object):
             warnings.warn('PDF not generated. Please specify valid path.',
                           UserWarning)
             traceback.print_stack()
-            return None
+            return
 
         # Lilypond doesn't like it if the file path already ends in .pdf
-        if file_path.lower()[-4:] == '.pdf':
-            file_path = file_path[:-4]
-
+        file_path.replace(".pdf", "")
         file_path = MusicGenerator._create_file_path(file_path, '')
 
         # Output the pdf score
@@ -312,7 +307,7 @@ class MusicGenerator(object):
             warnings.warn('MIDI not generated. Please specify valid path.',
                           UserWarning)
             traceback.print_stack()
-            return None
+            return
 
         file_path = MusicGenerator._create_file_path(file_path, 'mid')
 
@@ -339,7 +334,7 @@ class MusicGenerator(object):
             warnings.warn('Pickle not generated. Please specify valid path.',
                           UserWarning)
             traceback.print_stack()
-            return None
+            return
 
         file_path = MusicGenerator._create_file_path(file_path, 'pkl')
 
@@ -349,7 +344,7 @@ class MusicGenerator(object):
         return file_path
 
     @staticmethod
-    def _create_file_path(file_path, file_extension=None):  # pragma: no coverage
+    def _create_file_path(file_path, file_extension=None):
         '''
         Returns a file path and creates folders if necessary. If a path is given,
         a filename is generated using current time and file_extension provided is
@@ -361,12 +356,12 @@ class MusicGenerator(object):
         if file_path is None or file_path == '':
             return None
 
-        file_path = file_path.lower().strip()
-
         if file_path.endswith('/') or file_path.endswith('\\'):
             if file_extension is None:
-                raise AttributeError('Provide file_extension if only providing path: ' + file_path)
-
+                raise AttributeError('Provide file_extension if only providing path')
+            # Get this directory and go up one
+            script_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+            file_path = os.path.normpath(os.path.join(script_path, file_path))
             # Make folder if necessary
             if not os.path.exists(file_path):
                 os.makedirs(file_path)
@@ -385,7 +380,7 @@ class MusicGenerator(object):
 
         return file_path
 
-    def _create_melody_timing(self, note_timing_prob_list):  # pragma: no coverage
+    def _create_melody_timing(self, note_timing_prob_list):
         '''
         Returns a list of note lengths representing the time of a melody for a
         single bar.
@@ -459,7 +454,7 @@ class MusicGenerator(object):
         return music_generator
 
     @staticmethod
-    def _repeat_chords_track(raw_chord_progression, times_to_repeat):  # pragma: no coverage
+    def _repeat_chords_track(raw_chord_progression, times_to_repeat):
         '''
         Returns an extended raw chord list which is the original repeated a
         number of times

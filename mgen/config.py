@@ -1,7 +1,7 @@
 '''
-Created on Sep 2, 2016
+Configuration
 
-@author: Alex VanTol
+Houses project wide configurations.
 '''
 import os
 

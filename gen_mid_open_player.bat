@@ -13,7 +13,7 @@
 
 :::::::::::::::::::::::::::::::: CONFIGURATION :::::::::::::::::::::::::::::::::
 :: Path to Python installation
-set PYTHON_PATH="py"
+set PYTHON_PATH=py -2
 
 :: The name for your composition (included in some of the generated files)
 set COMPOSITION_NAME="EXAMPLE"
@@ -30,13 +30,13 @@ set START_BAR=1
 
 :: Path to the "Style", you can create your own following the same format as
 :: those in the "styles" folder
-set STYLE_FILE_PATH="..\styles\default.cfg"
+set STYLE_FILE_PATH="styles\default.json"
 
 :: Path to program to open MIDI file with
 set MIDI_PLAYER="MidiPlayW7.exe"
 
 :: Path to the main script
-set MUSIC_GENERATOR_CLI="..\main.py"
+set MUSIC_GENERATOR_CLI="mgen_cli.py"
 
 :: Get date and time
 For /f "tokens=2-4 delims=/ " %%a in ('date /t') do (set mydate=%%c-%%a-%%b)
