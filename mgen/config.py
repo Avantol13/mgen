@@ -1,8 +1,8 @@
-'''
+"""
 Configuration
 
 Houses project wide configurations.
-'''
+"""
 import os
 
 # Configuration
