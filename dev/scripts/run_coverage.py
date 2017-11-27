@@ -31,7 +31,7 @@ def main():
                                                                    cov_output_dir=project_cfg.COVERAGE_OUTPUT_DIR)
     )
 
-    open_html_coverage_command = "{cov_output_dir}\\index.html".format(cov_output_dir=project_cfg.COVERAGE_OUTPUT_DIR)
+    open_html_coverage_command = "{cov_output_dir}/index.html".format(cov_output_dir=project_cfg.COVERAGE_OUTPUT_DIR)
 
     os.chdir(project_cfg.SOURCE_CODE_DIR)
     print(run_coverage_for_source_command)

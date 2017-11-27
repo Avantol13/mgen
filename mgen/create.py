@@ -272,7 +272,7 @@ class MusicGenerator(object):
         '''
         Outputs a pdf to a specified path
 
-        :param file_path: Path to the file to generate. Put \\ at end to use
+        :param file_path: Path to the file to generate. Put / at end to use
                           default naming in directory specified. Otherwise
                           provide full path. DO NOT use relative pathing.
         '''
@@ -303,7 +303,7 @@ class MusicGenerator(object):
         '''
         Outputs a midi to a specified path
 
-        :param file_path: Path to the file to generate. Put \\ at end to use
+        :param file_path: Path to the file to generate. Put / at end to use
                           default naming in directory specified. Otherwise
                           provide full path. DO NOT use relative pathing.
         '''
@@ -330,7 +330,7 @@ class MusicGenerator(object):
         '''
         Outputs a python pickled object to a specified path
 
-        :param file_path: Path to the file to generate. Put \\ at end to use
+        :param file_path: Path to the file to generate. Put / at end to use
                           default naming in directory specified. Otherwise
                           provide full path. DO NOT use relative pathing.
         '''
@@ -360,7 +360,7 @@ class MusicGenerator(object):
         if file_path is None or file_path == '':
             return None
 
-        file_path = file_path.lower().strip()
+        file_path = file_path.strip()
 
         if file_path.endswith('/') or file_path.endswith('\\'):
             if file_extension is None:
@@ -371,7 +371,7 @@ class MusicGenerator(object):
                 os.makedirs(file_path)
 
             # Create filename based on key and time
-            file_path = (file_path + '\\' +
+            file_path = (file_path + '/' +
                          str(datetime.now()).replace(' ', '_').replace(':', '.') +
                          '.' + file_extension)
         else:
