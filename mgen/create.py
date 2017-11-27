@@ -9,20 +9,17 @@ from mgen import convert
 from mgen import time
 from mgen import choice
 from mgen import style
+from mgen import cfg_import
 from style import StyleProbs
 
 # Mingus modules
 import mingus.core.keys as keys
-import mingus.containers.bar as bar
 import mingus.core.progressions as progressions
 import mingus.core.meter as meter
 import mingus.containers.composition as mingus_composition
 import mingus.containers.track as track
 import mingus.extra.lilypond as LilyPond
 from mingus.midi import midi_file_out
-
-# Need scales import for eval() purposes, DON'T remove
-import mingus.core.scales as scales
 
 # Other Modules
 from datetime import datetime
@@ -291,7 +288,7 @@ class MusicGenerator(object):
         # Output the pdf score
         ly_string = LilyPond.from_Composition(self.composition)
         if ly_string and self.composition.tracks:
-            LilyPond.to_pdf(ly_string, file_path)
+            LilyPond.to_pdf(ly_string, file_path, lilypond_installation=cfg_import.config.LILYPOND_INSTALLATION)
         else:
             warnings.warn('PDF not generated because the composition didn\'t ' +
                           'have any tracks. :(', UserWarning)
