@@ -17,7 +17,7 @@ import sys
 
 PROJECT_CFG_DIR = os.path.realpath(os.path.dirname(__file__) + "/../../cfg/")
 PROJECT_CFG_NAME = "project_cfg"
-EXPECTED_CFG_VERSION = 1.0
+EXPECTED_CFG_VERSION = 1.1
 
 
 def get_project_cfg():

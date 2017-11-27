@@ -8,19 +8,24 @@ Generate randomized musical compositions based on probabilities.
 
 ## Overview
 
-1. /mingus (not my code, see [this](https://github.com/bspaans/python-mingus))
-2. /mgen (my code)
+1. /cfg
+    - Configuration for mgen
+    - project_cfg.py is for development scripts in the /dev folder
+2. /dev
+    - scripts to use for development
+    - unittests
+3. /mgen (my code)
     - choice.py *||||| Makes choices based on probabilities in a style*
     - convert.py *|||| Converts my stuff to mingus stuff and vice-versa*
     - create.py *||||| The magic happens here. Contains the MusicGenerator class*
     - style.py *|||||| Contains the Style class which defines probabilities*
     - time.py *||||||| Handles note and bar musical timing math stuff*
-    - config.py *||||| Configuration for mgen*
-3. /styles (holds cfg files for different styles)
-4. lilypond-2.18.2-1.mingw.exe (program for PDF generation)
+4. /mingus (not originally my code, I forked [this](https://github.com/bspaans/python-mingus))
+5. /styles (holds cfg files for different styles)
+6. lilypond-2.18.2-1.mingw.exe (program for PDF generation)
     - This one's for Windows (works with Windows 10)
     - See [here](http://lilypond.org/download.html) for alternate downloads
-5. MidiPlayW7.exe (a free midi player, see [here](http://www.chrishills.org.uk/midiplay/))
+7. MidiPlayW7.exe (a free midi player, see [here](http://www.chrishills.org.uk/midiplay/))
 
 ## Quickstart
 There are a few scripts included to show how this can be used at the moment.
@@ -38,6 +43,9 @@ You can install `timidity` with:
 
 Also, you'll need **[Lilypond](http://lilypond.org)** (a program for creating music notation in PDF's).
 Follow the directions [here](http://lilypond.org/unix.html) to install.
+
+Finally, you need to make sure that cfg/config.py has the correct location for
+lilypond. Set the LILYPOND_INSTALLATION variable.
 
 ## Official Documentation
 

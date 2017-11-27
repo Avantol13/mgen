@@ -9,8 +9,7 @@ import os
 import sys
 
 global config
-EXPECTED_CFG_VERSION = 1.0
-
+EXPECTED_CFG_VERSION = 1.1
 
 def set_global_config(config_module_path):
     """
@@ -64,3 +63,6 @@ def _verify_correct_version(project_cfg_module, config_module_path):
                         str(EXPECTED_CFG_VERSION) +
                         "\n\nConfiguration File: " +
                         str(config_module_path))
+
+# Default config to the default location (can be reset with set_global_config)
+set_global_config(os.path.dirname(os.path.abspath(__file__)) + "/../cfg/config.py")
