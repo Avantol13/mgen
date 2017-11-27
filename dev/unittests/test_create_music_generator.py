@@ -8,7 +8,7 @@ from mgen import MusicGenerator
 from mgen import StyleProbs
 from mgen import JAZZ_CFG_FILE
 import os
-from test._mock_backport import patch
+from mock import patch
 
 def setup_module(choice):
     pass
