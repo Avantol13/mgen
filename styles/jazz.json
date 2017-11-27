@@ -63,5 +63,8 @@
         "eighth_dotted sixteenth": "0.30",
         "quarter_dotted quarter_dotted": "0.02",
         "quarter_dotted eighth eighth": "0.03"
+    },
+    "__info__": {
+        "__version__": "1.0"
     }
 }

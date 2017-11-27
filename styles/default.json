@@ -74,5 +74,8 @@
         "eighth sixteenth sixteenth": "0.04",
         "sixteenth eighth sixteenth": "0.04",
         "sixteenth sixteenth eighth": "0.04"
+    },
+    "__info__": {
+        "__version__": "1.0"
     }
 }
