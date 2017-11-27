@@ -33,7 +33,7 @@ set START_BAR=1
 set STYLE_FILE_PATH="styles\default.json"
 
 :: Path to program to open MIDI file with
-set MIDI_PLAYER="MidiPlayW7.exe"
+set MIDI_PLAYER="../MidiPlayW7.exe"
 
 :: Path to the main script
 set MUSIC_GENERATOR_CLI="mgen_cli.py"
@@ -56,6 +56,5 @@ set PDF_OUTPUT_PATH=
  --generate_midi %MIDI_OUTPUT_PATH% --generate_pdf %PDF_OUTPUT_PATH%^
  --generate_pickle %PKL_OUTPUT_PATH%
 
-cd ..
 start %MIDI_PLAYER% %MIDI_OUTPUT_PATH% "C:\Temp\music_generator\output\%mydate%_%mytime%.mid"
 pause

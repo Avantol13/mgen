@@ -1,14 +1,12 @@
 [![Build Status](https://travis-ci.org/Avantol13/mgen.svg?branch=master)](https://travis-ci.org/Avantol13/mgen)
 [![Coverage Status](https://coveralls.io/repos/github/Avantol13/mgen/badge.svg?branch=master)](https://coveralls.io/github/Avantol13/mgen?branch=master)
 
-Music Generator (mgen)
-======================
+# Music Generator (mgen)
  > By: Alexander VanTol
 
 Generate randomized musical compositions based on probabilities.
 
-Overview
---------
+## Overview
 
 1. /mingus (not my code, see [this](https://github.com/bspaans/python-mingus))
 2. /mgen (my code)
@@ -24,5 +22,25 @@ Overview
     - See [here](http://lilypond.org/download.html) for alternate downloads
 5. MidiPlayW7.exe (a free midi player, see [here](http://www.chrishills.org.uk/midiplay/))
 
-        TODO: Add link to documentation
+## Quickstart
+There are a few scripts included to show how this can be used at the moment.
+
+### Windows Users
+Just run the .bat files in the root directory.
+I've included the executables necessary in the root dir of this repo.
+
+### Linux Users
+You need a **midi player** if you want to play the resulting .mid files.
+I recommend `[timidity]`(https://wiki.archlinux.org/index.php/timidity).
+
+You can install `timidity` with:
+`sudo apt-get install timidity`
+
+Also, you'll need **[Lilypond](http://lilypond.org)** (a program for creating music notation in PDF's).
+Follow the directions [here](http://lilypond.org/unix.html) to install.
+
+## Official Documentation
+
+> TODO: Add link to documentation
+
 See documentation [here]().
