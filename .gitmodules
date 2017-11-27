@@ -1,0 +1,3 @@
+[submodule "mingus"]
+	path = mingus
+	url = https://github.com/Avantol13/python-mingus.git
