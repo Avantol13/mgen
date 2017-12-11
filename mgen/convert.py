@@ -5,6 +5,7 @@ To convert somebody go and take them by the hand and guide them.
 
 # Mingus Modules
 import mingus.containers.note as note
+import mingus.core.notes as mingus_notes
 import mingus.core.meter as meter
 import mingus.core.scales as scales
 import mingus.core.value as value
@@ -106,39 +107,56 @@ def convert_chord_progression_to_track(key, chord_progression,
 
     return new_track
 
-def change_octave(note_timings, octave_change):
+def alter_octave(bar, octave_change):
     '''
     Returns note timing with octave change based on value for octave_change
-    (ex: change_octave(note_timings, -1))
+    (ex: alter_octave(bar, -1))
 
-    :param note_timings: List of notes/chords to change octave of
+    :param bar: List of bar/chords to change octave of
     :param octave_change: Integer to shift octave by. Positive is up, negative is down
     '''
-    new_note_timings = []
+    new_bar = []
 
     # Go through all the different note timings/chords
-    for note_timing in note_timings:
-        note_timing_octave_change = []
+    for notes in bar:
+        note_octave_change = []
 
-        # For every note in the timing/chord, change octave
-        for given_note in note_timing:
-            new_note = note.Note(given_note)
-            octave_change_temp = octave_change
+        # If it's not a rest (None) and NOT a single note,
+        # then continue into the list of notes
+        if notes:
+            if mingus_notes.is_valid_note(notes):
+                new_note = _adjust_note_octave(notes, octave_change)
 
-            if octave_change > 0:
-                while(octave_change_temp > 0):
-                    new_note.octave_up()
-                    octave_change_temp -= 1
-            elif octave_change < 0:
-                while(octave_change_temp < 0):
-                    new_note.octave_down()
-                    octave_change_temp += 1
+                # Append the altered note
+                note_octave_change.append(new_note)
             else:
-                # Do nothing
-                pass
+                for given_note in notes:
+                    if given_note:
+                        new_note = _adjust_note_octave(given_note, octave_change)
+                    else:
+                        new_note = None
 
-            # Append the altered note
-            note_timing_octave_change.append(new_note)
-        new_note_timings.append(note_timing_octave_change)
+                    # Append the altered note
+                    note_octave_change.append(new_note)
 
-    return new_note_timings
+        new_bar.append(note_octave_change)
+
+    return new_bar
+
+def _adjust_note_octave(given_note, octave_change):
+    new_note = note.Note(given_note)
+    octave_change_temp = octave_change
+
+    if octave_change > 0:
+        while (octave_change_temp > 0):
+            new_note.octave_up()
+            octave_change_temp -= 1
+    elif octave_change < 0:
+        while (octave_change_temp < 0):
+            new_note.octave_down()
+            octave_change_temp += 1
+    else:
+        # Do nothing
+        pass
+
+    return new_note
