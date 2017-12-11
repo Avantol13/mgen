@@ -9,20 +9,17 @@ from mgen import convert
 from mgen import time
 from mgen import choice
 from mgen import style
+from mgen import cfg_import
 from style import StyleProbs
 
 # Mingus modules
 import mingus.core.keys as keys
-import mingus.containers.bar as bar
 import mingus.core.progressions as progressions
 import mingus.core.meter as meter
 import mingus.containers.composition as mingus_composition
 import mingus.containers.track as track
 import mingus.extra.lilypond as LilyPond
 from mingus.midi import midi_file_out
-
-# Need scales import for eval() purposes, DON'T remove
-import mingus.core.scales as scales
 
 # Other Modules
 from datetime import datetime
@@ -272,7 +269,7 @@ class MusicGenerator(object):
         '''
         Outputs a pdf to a specified path
 
-        :param file_path: Path to the file to generate. Put \\ at end to use
+        :param file_path: Path to the file to generate. Put / at end to use
                           default naming in directory specified. Otherwise
                           provide full path. DO NOT use relative pathing.
         '''
@@ -291,7 +288,7 @@ class MusicGenerator(object):
         # Output the pdf score
         ly_string = LilyPond.from_Composition(self.composition)
         if ly_string and self.composition.tracks:
-            LilyPond.to_pdf(ly_string, file_path)
+            LilyPond.to_pdf(ly_string, file_path, lilypond_installation=cfg_import.config.LILYPOND_INSTALLATION)
         else:
             warnings.warn('PDF not generated because the composition didn\'t ' +
                           'have any tracks. :(', UserWarning)
@@ -303,7 +300,7 @@ class MusicGenerator(object):
         '''
         Outputs a midi to a specified path
 
-        :param file_path: Path to the file to generate. Put \\ at end to use
+        :param file_path: Path to the file to generate. Put / at end to use
                           default naming in directory specified. Otherwise
                           provide full path. DO NOT use relative pathing.
         '''
@@ -330,7 +327,7 @@ class MusicGenerator(object):
         '''
         Outputs a python pickled object to a specified path
 
-        :param file_path: Path to the file to generate. Put \\ at end to use
+        :param file_path: Path to the file to generate. Put / at end to use
                           default naming in directory specified. Otherwise
                           provide full path. DO NOT use relative pathing.
         '''
@@ -360,7 +357,7 @@ class MusicGenerator(object):
         if file_path is None or file_path == '':
             return None
 
-        file_path = file_path.lower().strip()
+        file_path = file_path.strip()
 
         if file_path.endswith('/') or file_path.endswith('\\'):
             if file_extension is None:
@@ -371,7 +368,7 @@ class MusicGenerator(object):
                 os.makedirs(file_path)
 
             # Create filename based on key and time
-            file_path = (file_path + '\\' +
+            file_path = (file_path + '/' +
                          str(datetime.now()).replace(' ', '_').replace(':', '.') +
                          '.' + file_extension)
         else:

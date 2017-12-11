@@ -10,4 +10,7 @@ setup(name='mgen',
       packages=find_packages(),
       keywords="music generator theory probability random song melody tune",
       include_package_data=True,
+      install_requires=[
+            "mock==2.0.0",
+      ]
       )

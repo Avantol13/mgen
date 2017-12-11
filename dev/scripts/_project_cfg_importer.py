@@ -17,7 +17,7 @@ import sys
 
 PROJECT_CFG_DIR = os.path.realpath(os.path.dirname(__file__) + "/../../cfg/")
 PROJECT_CFG_NAME = "project_cfg"
-EXPECTED_CFG_VERSION = 1.0
+EXPECTED_CFG_VERSION = 1.1
 
 
 def get_project_cfg():
@@ -29,7 +29,7 @@ def get_project_cfg():
         project_cfg_module = importlib.import_module(PROJECT_CFG_NAME)
     except:
         raise FileNotFoundError("\n\n================================= ERROR ========================================"
-                                "\nUnable to import project configuration: " + PROJECT_CFG_DIR + "\\" + PROJECT_CFG_NAME + ".py"
+                                "\nUnable to import project configuration: " + PROJECT_CFG_DIR + "/" + PROJECT_CFG_NAME + ".py"
                                 "\n================================================================================\n")
 
     _verify_correct_version(project_cfg_module)

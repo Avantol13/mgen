@@ -126,16 +126,16 @@ def _get_parser(args):
 
     parser.add_argument('-midi', '--generate_midi', metavar='MIDI_OUTPUT_PATH',
                         help='Generates the composition as a MIDI file',
-                        nargs='?', const=mgen.config._PATH_TO_SCRIPT + '/../output/', default=None)
+                        nargs='?', const=os.path.dirname(os.path.abspath(__file__)) + '/output/', default=None)
 
     parser.add_argument('-pdf', '--generate_pdf', metavar='PDF_OUTPUT_PATH',
                         help='Generates the musical score as a PDF file',
-                        nargs='?', const=mgen.config._PATH_TO_SCRIPT + '/../output/', default=None)
+                        nargs='?', const=os.path.dirname(os.path.abspath(__file__)) + '/output/', default=None)
 
     parser.add_argument('-pkl', '--generate_pickle', metavar='PKL_OUTPUT_PATH',
                         help='Generates the MusicGenerator object as a .pkl ' +
                         '(reimportable Python object) file',
-                        nargs='?', const=mgen.config._PATH_TO_SCRIPT + '/../output/', default=None)
+                        nargs='?', const=os.path.dirname(os.path.abspath(__file__)) + '/output/', default=None)
 
     parser.add_argument('-st', '--style_file_path', metavar='STYLE_FILE_PATH',
                         help='Path to musical probabilities configuration file,' +
@@ -154,7 +154,7 @@ def _get_parser(args):
 
     parser.add_argument("-cfg", "--cfg_file_path",
                         type=str,
-                        default=os.path.realpath("./cfg/config.py"),
+                        default=os.path.abspath("./cfg/config.py"),
                         help=("Absolute path to Python file "
                               "containing necessary configuration "
                               "values for the tool."))

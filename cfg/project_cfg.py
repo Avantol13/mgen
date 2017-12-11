@@ -27,4 +27,4 @@ COVERAGE_IGNORE_FILES = "*mingus/*,*dev/*,*cfg/*,mgen_cli.py,setup.py,cfg_import
 
 DOCUMENTATION_DIR = os.path.abspath(DEVELOPMENT_DIR + "/docs")
 
-__CFG_VERSION__ = 1.0
+__CFG_VERSION__ = 1.1
