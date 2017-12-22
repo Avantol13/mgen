@@ -55,25 +55,41 @@ def main():
 
     if args.melody_track:
         if args.repeat_tracks:
-            my_generator.create_melody_track(style=my_style,
-                                          location_to_add=args.start_bar,
-                                          num_bars=args.melody_track,
-                                          times_to_repeat=args.repeat_tracks)
+            my_generator.insert_track(
+                my_generator.create_melody_track(
+                    style=my_style,
+                    num_bars=args.melody_track
+                ),
+                location_to_add=args.start_bar,
+                times_to_repeat=args.repeat_tracks
+            )
         else:
-            my_generator.create_melody_track(style=my_style, location_to_add=args.start_bar,
-                                          num_bars=args.melody_track)
+            my_generator.insert_track(
+                my_generator.create_melody_track(
+                    style=my_style,
+                    num_bars=args.melody_track
+                ),
+                location_to_add=args.start_bar
+            )
 
     if args.chords_track:
         if args.repeat_tracks:
-            my_generator.create_chords_track(style=my_style,
-                                          location_to_add=args.start_bar,
-                                          num_bars=args.melody_track,
-                                          times_to_repeat=args.repeat_tracks,
-                                          octave_adjust=-1)
+            my_generator.insert_track(
+                my_generator.create_chords_track(
+                    style=my_style,
+                    num_bars=args.melody_track,
+                    octave_adjust=-1
+                ),
+                location_to_add=args.start_bar,
+                times_to_repeat=args.repeat_tracks
+            )
         else:
-            my_generator.create_chords_track(style=my_style, location_to_add=args.start_bar,
-                                          num_bars=args.melody_track,
-                                          octave_adjust=-1)
+            my_generator.insert_track(
+                my_generator.create_chords_track(style=my_style,
+                                                 location_to_add=args.start_bar,
+                                                 num_bars=args.melody_track,
+                                                 octave_adjust=-1)
+            )
 
     # File exports
     if args.generate_pickle:

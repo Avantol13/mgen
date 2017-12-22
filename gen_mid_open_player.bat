@@ -33,7 +33,7 @@ set START_BAR=1
 set STYLE_FILE_PATH="styles\default.json"
 
 :: Path to program to open MIDI file with
-set MIDI_PLAYER="../MidiPlayW7.exe"
+set MIDI_PLAYER="MidiPlayW7.exe"
 
 :: Path to the main script
 set MUSIC_GENERATOR_CLI="mgen_cli.py"
