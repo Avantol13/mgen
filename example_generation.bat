@@ -13,7 +13,7 @@
 
 :::::::::::::::::::::::::::::::: CONFIGURATION :::::::::::::::::::::::::::::::::
 :: Path to Python installation
-set PYTHON_PATH=py -2
+set PYTHON_PATH=py -3
 
 :: The name for your composition (included in some of the generated files)
 set COMPOSITION_NAME="EXAMPLE"

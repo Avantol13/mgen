@@ -92,7 +92,7 @@ def test_choose_key_randomness():
     # Make sure they"re not ALL equal. Although this is possible... it"s
     # very unlikely. If you got here because of a failed test, I"m sorry.
     # Everything is most likely fine. Run them again.
-    assert len(set(keys_list)) != 1
+    assert len(set(str(keys_list))) != 1
 
 if __name__ == "__main__":
     pytest.main("-v")

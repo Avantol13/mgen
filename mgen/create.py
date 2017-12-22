@@ -10,7 +10,7 @@ from mgen import time
 from mgen import choice
 from mgen import style
 from mgen import cfg_import
-from style import Style
+from mgen.style import Style
 
 # Mingus modules
 import mingus.core.keys as keys
@@ -158,7 +158,7 @@ class MusicGenerator(object):
 
             if found_possible_match:
                 raw_chord_progression = choice.choose_chord_progression(matches)
-                repeat_times_to_fill = num_bars / len(raw_chord_progression)
+                repeat_times_to_fill = int(num_bars / len(raw_chord_progression))
 
                 # Repeat chords as necessary to fill up bars to number specified
                 raw_chord_progression = self._repeat_chords_track(raw_chord_progression,
@@ -265,7 +265,8 @@ class MusicGenerator(object):
         # Output the pdf score
         ly_string = LilyPond.from_Composition(self.composition)
         if ly_string and self.composition.tracks:
-            LilyPond.to_pdf(ly_string, file_path, lilypond_installation=cfg_import.config.LILYPOND_INSTALLATION)
+            LilyPond.to_pdf(ly_string, file_path,
+                            lilypond_installation=cfg_import.config.LILYPOND_INSTALLATION)
         else:
             warnings.warn('PDF not generated because the composition didn\'t ' +
                           'have any tracks. :(', UserWarning)
