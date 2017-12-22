@@ -10,7 +10,7 @@ from mgen import time
 from mgen import choice
 from mgen import style
 from mgen import cfg_import
-from style import StyleProbs
+from style import Style
 
 # Mingus modules
 import mingus.core.keys as keys
@@ -40,16 +40,16 @@ class MusicGenerator(object):
         '''
         Constructor
 
-        :param style_probs: A StyleProbs object to represent a certain musical style. Holds
+        :param style_probs: A Style object to represent a certain musical style. Holds
                             the probabilities for scales, keys, note timings, modes, etc.
         :param composition_title: Title for the work, used for generated files
         :param author_name: Name of the author, used for generated files
         '''
         self.composition = mingus_composition.Composition()
 
-        # If StyleProbs not provided, use default
+        # If Style not provided, use default
         if style_probs is None:
-            self.style_probs = StyleProbs(style.DEFAULT_CFG_FILE)
+            self.style_probs = Style(style.DEFAULT_CFG_FILE)
         else:
             self.style_probs = style_probs
 

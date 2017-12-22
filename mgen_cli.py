@@ -28,14 +28,14 @@ def main():
 
     print_header()
 
-    # Use provided StyleProbs or use default
+    # Use provided Style or use default
     if args.style_file_path:
         try:
-            my_style = mgen.StyleProbs(args.style_file_path)
+            my_style = mgen.Style(args.style_file_path)
         except IOError:
             print_error('Couldn\'t find ' + args.style_file_path)
     else:
-        my_style = mgen.StyleProbs(mgen.DEFAULT_CFG_FILE)
+        my_style = mgen.Style(mgen.DEFAULT_CFG_FILE)
 
     # Load MusicGenerator object is specified, otherwise create a new one
     if args.load_pickle:
@@ -55,23 +55,23 @@ def main():
 
     if args.melody_track:
         if args.repeat_tracks:
-            my_generator.add_melody_track(style=my_style,
+            my_generator.create_melody_track(style=my_style,
                                           location_to_add=args.start_bar,
                                           num_bars=args.melody_track,
                                           times_to_repeat=args.repeat_tracks)
         else:
-            my_generator.add_melody_track(style=my_style, location_to_add=args.start_bar,
+            my_generator.create_melody_track(style=my_style, location_to_add=args.start_bar,
                                           num_bars=args.melody_track)
 
     if args.chords_track:
         if args.repeat_tracks:
-            my_generator.add_chords_track(style=my_style,
+            my_generator.create_chords_track(style=my_style,
                                           location_to_add=args.start_bar,
                                           num_bars=args.melody_track,
                                           times_to_repeat=args.repeat_tracks,
                                           octave_adjust=-1)
         else:
-            my_generator.add_chords_track(style=my_style, location_to_add=args.start_bar,
+            my_generator.create_chords_track(style=my_style, location_to_add=args.start_bar,
                                           num_bars=args.melody_track,
                                           octave_adjust=-1)
 
