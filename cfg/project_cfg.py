@@ -4,11 +4,11 @@ PROJECT_NAME = "mgen"
 
 PYTHON_2_EXECUTABLE = "py -2"
 PYTHON_3_EXECUTABLE = "py -3"
-DEFAULT_PYTHON_EXECUTABLE = PYTHON_2_EXECUTABLE
+DEFAULT_PYTHON_EXECUTABLE = PYTHON_3_EXECUTABLE
 
 #             0 = The tool will just use the DEFAULT_PYTHON_EXECUTABLE for testing
 # Anything else = Will run tests under PYTHON_2_EXECUTABLE and PYTHON_3_EXECUTABLE
-IS_PYTHON_2_AND_3_COMPATIBLE = 0
+IS_PYTHON_2_AND_3_COMPATIBLE = 1
 
 # Make sure these paths are absolute
 PROJECT_CFG_DIR = os.path.normpath(os.path.dirname(os.path.realpath(__file__)))

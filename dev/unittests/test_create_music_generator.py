@@ -8,9 +8,13 @@ from mgen import MusicGenerator
 from mgen import Style
 from mgen import JAZZ_CFG_FILE
 import os
-from mock import patch
-from mock import MagicMock
-from mock import mock_open
+
+try:
+    from mock import patch
+    from mock import mock_open
+except:
+    from unittest.mock import patch
+    from unittest.mock import patch
 
 def setup_module(choice):
     pass
@@ -363,7 +367,7 @@ def test_export_midi_path(create_file_mock):
     assert create_file_mock.called_with(resulting_path)
 
 
-@patch('%s.open' % __name__, mock_open(read_data=u'aaa'), create=True)
+@patch('%s.open' % __name__, mock_open(read_data='aaa'), create=True)
 def test_export_pkl_invalid_path():
     filename = None
     music_generator = MusicGenerator()
@@ -398,7 +402,7 @@ def test_export_pkl_invalid_path():
 #     assert create_file_mock.called_with(resulting_path)
 
 
-@patch('%s.open' % __name__, mock_open(read_data=u'aaa'), create=True)
+@patch('%s.open' % __name__, mock_open(read_data='aaa'), create=True)
 def test_from_pickle():
     filename = 'test_export_pkl.pkl'
     music_generator = MusicGenerator()
