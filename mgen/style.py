@@ -15,7 +15,7 @@ JAZZ_CFG_FILE = (  os.path.dirname(os.path.abspath(__file__))
 
 REQUIRED_STYLE_CFG_VERSION = "1.0"
 
-class StyleProbs(object):
+class Style(object):
     """
     A representation of a certain musical style. Holds the probabilities for
     scales, keys, note timings, modes, etc.

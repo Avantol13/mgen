@@ -10,7 +10,7 @@ from mgen import time
 from mgen import choice
 from mgen import style
 from mgen import cfg_import
-from style import StyleProbs
+from style import Style
 
 # Mingus modules
 import mingus.core.keys as keys
@@ -27,6 +27,8 @@ import os
 import warnings
 import traceback
 import pickle
+import copy
+
 
 class MusicGenerator(object):
     '''
@@ -38,16 +40,16 @@ class MusicGenerator(object):
         '''
         Constructor
 
-        :param style: A Style object to represent a certain musical style. Holds
-                      the probabilities for scales, keys, note timings, modes, etc.
+        :param style_probs: A Style object to represent a certain musical style. Holds
+                            the probabilities for scales, keys, note timings, modes, etc.
         :param composition_title: Title for the work, used for generated files
         :param author_name: Name of the author, used for generated files
         '''
         self.composition = mingus_composition.Composition()
 
-        # If StyleProbs not provided, use default
+        # If Style not provided, use default
         if style_probs is None:
-            self.style_probs = StyleProbs(style.DEFAULT_CFG_FILE)
+            self.style_probs = Style(style.DEFAULT_CFG_FILE)
         else:
             self.style_probs = style_probs
 
@@ -57,27 +59,18 @@ class MusicGenerator(object):
         self._time_signature = choice.choose_time_signature(self.style_probs)
         self._key = choice.choose_key(self.style_probs.probabilities['keys'])
 
-    def add_melody_track(self, num_bars, location_to_add=1, style=None,
-                         times_to_repeat=0, octave_adjust=0):
+    def create_melody_track(self, num_bars, style=None, octave_adjust=0):
         '''
-        Adds a mingus Track containing bars of randomly generated melodies to
+        Creates a mingus Track containing bars of randomly generated melodies to
         the composition.
 
         :param num_bars: The number of bars to add to the track
-        :param location_to_add: Bar in the track to start adding new bars (+ int, starts at 1)
         :param style: The musical Style for the track, overrides the generator's
-        :param times_to_repeat: Times to repeat the num_bars (+ int)
         :param octave_adjust: Adjustment of the octave of notes in the generated bars (+/- int)
         '''
 
         if style is None:
             style = self.style_probs
-
-        # Input validation
-        if location_to_add < 1:
-            raise AttributeError('Cannot add a track at location ' + str(location_to_add))
-        if times_to_repeat < 0:
-            raise AttributeError(str(times_to_repeat) + ' is not a valid positive number for times_to_repeat.')
 
         # Check if it's a major key
         major_key_bool = self._key.istitle()
@@ -100,48 +93,32 @@ class MusicGenerator(object):
             # Determine number notes in melody
             number_notes = time.get_notes_in_timing(melody_timing)
 
-            if octave_adjust != 0:
-                # Adjust octave
-                melody_timing = convert.change_octave(number_notes,
-                                                      octave_adjust)
-
             # Choose notes for melody based on scale for given key
             chosen_notes = choice.choose_notes(number_notes, scale)
+
+            if octave_adjust != 0:
+                # Adjust octave
+                chosen_notes = convert.alter_octave(chosen_notes,
+                                                    octave_adjust)
 
             # Combine melody time and notes into a mingus Bar object
             bar_to_add = convert.convert_notes_to_bar(self._key, melody_timing,
                                                       chosen_notes,
                                                       self._time_signature)
 
-            #print('TESTING STUFF...')
-            #print(bar_to_add.determine_chords(shorthand=True))
-            #print(bar_to_add.determine_progression(shorthand=True))
-
             # Add bar to track
             melody_track.add_bar(bar_to_add)
 
-        # Repeat chords per argument
-        melody_track.bars += melody_track.bars * times_to_repeat
+        return melody_track
 
-        # Add empty bars to the front of the track to place melody at the
-        # location specified. Note: Start at Bar #1
-        empty_bars_to_add = location_to_add - 1
-        melody_track = time.prepend_empty_bars_to_track(melody_track,
-                                                        empty_bars_to_add)
-
-        self.composition.add_track(melody_track)
-
-    def add_chords_track(self, num_bars=None, location_to_add=1, style=None,
-                         melody_track=None, times_to_repeat=0, octave_adjust=0,
-                         force_mode_scale=False):
+    def create_chords_track(self, num_bars=None, style=None, melody_track=None,
+                            octave_adjust=0, force_mode_scale=False):
         '''
-        Adds a track to the composition filled with chords
+        Create a track to the composition filled with chords
 
         :param num_bars: The number of bars to add to the track
-        :param location_to_add: Bar in the track to start adding new bars
         :param style: The musical Style for the track
         :param melody_track: Melody track to base the chords track off of TODO: Unused
-        :param times_to_repeat: Times to repeat the num_bars
         :param octave_adjust: Adjustment of the octave of notes in the generated bars
         :param force_mode_scale: Force a certain mode for a scale TODO: Unused
         TODO: Create chord length other than all whole notes
@@ -149,12 +126,6 @@ class MusicGenerator(object):
 
         if style is None:
             style = self.style_probs
-
-        # Input validation
-        if location_to_add < 1:
-            raise AttributeError('Cannot add a track at location ' + str(location_to_add))
-        if times_to_repeat < 0:
-            raise AttributeError(str(times_to_repeat) + ' is not a valid positive number for times_to_repeat.')
 
         # Create chord progression
         progression_probs = style.probabilities['progressions']
@@ -206,24 +177,30 @@ class MusicGenerator(object):
                                                          self._key)
 
         # Adjust octave
-        chord_progression = convert.change_octave(chord_progression_notes,
-                                                  octave_adjust)
+        chord_progression = convert.alter_octave(chord_progression_notes,
+                                                 octave_adjust)
 
         # Convert it to a mingus track
         chord_track = convert.convert_chord_progression_to_track(self._key, chord_progression,
                                                                  self._time_signature)
         chord_track.style_probs = style
 
+        return chord_track
+
+    def insert_track(self, track, location_to_add=1, times_to_repeat=0):
+        new_track = copy.deepcopy(track)
+
         # Repeat chords per argument
-        chord_track.bars += chord_track.bars * times_to_repeat
+        new_track.bars += new_track.bars * times_to_repeat
 
-        # Add empty bars to the front of the track to place chords at the
+        # Add empty bars to the front of the new_track to place melody at the
         # location specified. Note: Start at Bar #1
-        empty_bars_to_add = location_to_add - 1
-        chord_track = time.prepend_empty_bars_to_track(chord_track,
-                                                       empty_bars_to_add)
+        if location_to_add > 1:
+            empty_bars_to_add = location_to_add - 1
+            new_track = time.prepend_empty_bars_to_track(new_track,
+                                                     empty_bars_to_add)
 
-        self.composition.add_track(chord_track)
+        self.composition.add_track(new_track)
 
     def remove_track(self, index=None):
         '''
