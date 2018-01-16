@@ -1,7 +1,7 @@
-'''
+"""
 It is our choices... that show what we truly are, far more than our abilities.
     - J. K. Rowling
-'''
+"""
 
 # Project Modules
 from mgen import time
@@ -47,12 +47,12 @@ MINGUS_SCALES_LOOKUP = {
 
 
 def choose_scale(key, scale_prob_list, choice=None):
-    '''
+    """
     Return a randomly chosen scale by using the provided probability dictionary.
 
     :param key: The musical key to use for the scale
     :param scale_prob_list: List of tuples with scales and associated probabilities
-    '''
+    """
     if choice is None:
         choice = random.uniform(0, 1)
 
@@ -74,14 +74,14 @@ def choose_scale(key, scale_prob_list, choice=None):
 
 
 def choose_key(key_prob_list, choice=None):
-    '''
+    """
     Return a randomly chosen key by using the provided probability dictionary.
 
     :param key_prob_list: List of tuples with keys and associated probabilities
     :param choice: Leave as default for random choice.
                    float between 0.0 and 1.0 to determine which item in list to
                    choose. Closer to 1 will choose a higher probability item
-    '''
+    """
     if choice is None:
         choice = random.uniform(0, 1)
 
@@ -107,7 +107,7 @@ def choose_key(key_prob_list, choice=None):
 
 
 def choose_time_signature(time_signature_prob_list, choice=None):
-    '''
+    """
     Return a randomly chosen time signature by using the provided probability
     dictionary. TODO: Actually make this random (create probability in cfg file
     for time sigs)
@@ -117,7 +117,7 @@ def choose_time_signature(time_signature_prob_list, choice=None):
     :param choice: Leave as default for random choice.
                float between 0.0 and 1.0 to determine which item in list to
                choose. Closer to 1 will choose a higher probability item
-    '''
+    """
     if choice is None:
         choice = random.uniform(0, 1)
 
@@ -129,7 +129,7 @@ def choose_time_signature(time_signature_prob_list, choice=None):
 
 
 def choose_chord_progression(chord_progression_prob_list, choice=None):
-    '''
+    """
     Return a list of chords randomly by using the provided probability
     dictionary.
 
@@ -138,7 +138,7 @@ def choose_chord_progression(chord_progression_prob_list, choice=None):
     :param choice: Leave as default for random choice.
                    float between 0.0 and 1.0 to determine which item in list to
                    choose. Closer to 1 will choose a higher probability item
-    '''
+    """
     if choice is None:
         choice = random.uniform(0, 1)
 
@@ -161,7 +161,7 @@ def choose_chord_progression(chord_progression_prob_list, choice=None):
 
 
 def choose_notes(number_notes, scale, choice=None):
-    '''
+    """
     Returns a list of notes chosen randomly from a given scale.
 
     :param number_notes: The number of notes to add to list
@@ -171,7 +171,7 @@ def choose_notes(number_notes, scale, choice=None):
                    choose. Closer to 1 will choose a higher probability item
 
     TODO: Don't just use the ascending scale...
-    '''
+    """
     if choice is None:
         choice = random.uniform(0, 1)
 
@@ -195,7 +195,7 @@ def choose_notes(number_notes, scale, choice=None):
 
 
 def choose_next_timing(remaining_time_in_bar, note_timing_prob_list, choice=None):
-    '''
+    """
     Returns a note timing representing a series of notes that will fit in the
     remaining portion of the bar.
 
@@ -205,7 +205,7 @@ def choose_next_timing(remaining_time_in_bar, note_timing_prob_list, choice=None
     :param choice: Leave as default for random choice.
                    float between 0.0 and 1.0 to determine which item in list to
                    choose. Closer to 1 will choose a higher probability item
-    '''
+    """
     if choice is None:
         choice = random.uniform(0, 1)
 

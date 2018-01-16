@@ -1,8 +1,7 @@
-'''
-Created on Apr 25, 2016
-
-@author: Alexander VanTol
-'''
+"""
+In a time of destruction, create something.
+    - Maxine Hong Kingston
+"""
 
 # Project Modules
 from mgen import convert
@@ -31,20 +30,20 @@ import copy
 
 
 class MusicGenerator(object):
-    '''
+    """
     A magical deity capable of generating music based on a predefined style
-    '''
+    """
 
     def __init__(self, style_probs=None, composition_title='Untitled',
                  author_name='By: Al Gogh Rhythm'):
-        '''
+        """
         Constructor
 
         :param style_probs: A Style object to represent a certain musical style. Holds
                             the probabilities for scales, keys, note timings, modes, etc.
         :param composition_title: Title for the work, used for generated files
         :param author_name: Name of the author, used for generated files
-        '''
+        """
         self.composition = mingus_composition.Composition()
 
         # If Style not provided, use default
@@ -60,14 +59,14 @@ class MusicGenerator(object):
         self._key = choice.choose_key(self.style_probs.probabilities['keys'])
 
     def create_melody_track(self, num_bars, style=None, octave_adjust=0):
-        '''
+        """
         Creates a mingus Track containing bars of randomly generated melodies to
         the composition.
 
         :param num_bars: The number of bars to add to the track
         :param style: The musical Style for the track, overrides the generator's
         :param octave_adjust: Adjustment of the octave of notes in the generated bars (+/- int)
-        '''
+        """
 
         if style is None:
             style = self.style_probs
@@ -113,7 +112,7 @@ class MusicGenerator(object):
 
     def create_chords_track(self, num_bars=None, style=None, melody_track=None,
                             octave_adjust=0, force_mode_scale=False):
-        '''
+        """
         Create a track to the composition filled with chords
 
         :param num_bars: The number of bars to add to the track
@@ -122,7 +121,7 @@ class MusicGenerator(object):
         :param octave_adjust: Adjustment of the octave of notes in the generated bars
         :param force_mode_scale: Force a certain mode for a scale TODO: Unused
         TODO: Create chord length other than all whole notes
-        '''
+        """
 
         if style is None:
             style = self.style_probs
@@ -203,11 +202,11 @@ class MusicGenerator(object):
         self.composition.add_track(new_track)
 
     def remove_track(self, index=None):
-        '''
+        """
         Removes a track from the composition
 
         :param index: Index of track in composition track list to remove
-        '''
+        """
         # If no index is specified, remove last track
         if index is None:
             index = len(self.composition.tracks) - 1
@@ -219,11 +218,11 @@ class MusicGenerator(object):
         self.composition.tracks.pop(index)
 
     def set_time_signature(self, time_signature):
-        '''
+        """
         Set the time signature for the composition.
 
         :param time_signature: The musical time signature to set for a composition. Format: (3,4) for 3/4, (4,4) for 4/4, etc.
-        '''
+        """
         if meter.is_valid(time_signature):
             self._time_signature = time_signature
         else:
@@ -231,25 +230,25 @@ class MusicGenerator(object):
                                  UserWarning)
 
     def set_key(self, key):
-        '''
+        """
         Set the key for the composition. Will randomly choose key by using the
         probabilities in configuration file if one is not provided
 
         :param key: Musical key to use
-        '''
+        """
         if keys.is_valid_key(key):
             self._key = key
         else:
             raise AttributeError(str(key) + ' is not a valid key.', UserWarning)
 
     def export_pdf(self, file_path):
-        '''
+        """
         Outputs a pdf to a specified path
 
         :param file_path: Path to the file to generate. Put / at end to use
                           default naming in directory specified. Otherwise
                           provide full path. DO NOT use relative pathing.
-        '''
+        """
         if file_path is None:
             warnings.warn('PDF not generated. Please specify valid path.',
                           UserWarning)
@@ -275,13 +274,13 @@ class MusicGenerator(object):
         return file_path + '.pdf'
 
     def export_midi(self, file_path, bpm=100, repeat=0, verbose=False):
-        '''
+        """
         Outputs a midi to a specified path
 
         :param file_path: Path to the file to generate. Put / at end to use
                           default naming in directory specified. Otherwise
                           provide full path. DO NOT use relative pathing.
-        '''
+        """
         if file_path is None:
             warnings.warn('MIDI not generated. Please specify valid path.',
                           UserWarning)
@@ -302,13 +301,13 @@ class MusicGenerator(object):
         return file_path
 
     def export_pickle(self, file_path, protocol_to_use=pickle.HIGHEST_PROTOCOL):
-        '''
+        """
         Outputs a python pickled object to a specified path
 
         :param file_path: Path to the file to generate. Put / at end to use
                           default naming in directory specified. Otherwise
                           provide full path. DO NOT use relative pathing.
-        '''
+        """
         if file_path is None or file_path == '':
             warnings.warn('Pickle not generated. Please specify valid path.',
                           UserWarning)
@@ -324,14 +323,14 @@ class MusicGenerator(object):
 
     @staticmethod
     def _create_file_path(file_path, file_extension=None):
-        '''
+        """
         Returns a file path and creates folders if necessary. If a path is given,
         a filename is generated using current time and file_extension provided is
         appended.
 
         :param file_path: Path to filename with extension or path to directory
         :param file_extension: Extension for file if file_path is a dir. Ex: pdf
-        '''
+        """
         if file_path is None or file_path == '':
             return None
 
@@ -360,13 +359,13 @@ class MusicGenerator(object):
         return file_path
 
     def _create_melody_timing(self, note_timing_prob_list):
-        '''
+        """
         Returns a list of note lengths representing the time of a melody for a
         single bar.
 
         :param note_timing_prob_list: List of tuples with note timings and
                                       associated probabilities
-        '''
+        """
         melody_bar = []
 
         # If valid time signature is supplied, use it to craft melody, otherwise
@@ -392,9 +391,9 @@ class MusicGenerator(object):
         return melody_bar
 
     def __str__(self):
-        '''
+        """
         Returns a string representation of the class.
-        '''
+        """
         output = ''
         output += 'Time Signature: ' + str(self._time_signature) + '\n'
         output += '           Key: ' + str(self._key) + '\n'
@@ -434,13 +433,13 @@ class MusicGenerator(object):
 
     @staticmethod
     def _repeat_chords_track(raw_chord_progression, times_to_repeat):
-        '''
+        """
         Returns an extended raw chord list which is the original repeated a
         number of times
 
         :param raw_chord_progression: List of notes representing chord progression
         :param times_to_repeat: How many times to repeat the chords
-        '''
+        """
         # Repeat chords per argument
         extended_chord_progression = []
         for _ in range(0, times_to_repeat):

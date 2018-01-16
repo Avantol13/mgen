@@ -1,8 +1,8 @@
-'''
+"""
 Created on Jan 21, 2016
 
 @author: Alexander VanTol
-'''
+"""
 
 # Project Modules
 import mgen

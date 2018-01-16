@@ -1,8 +1,3 @@
-'''
-Created on Sep 14, 2016
-
-@author: Alexander VanTol
-'''
 import pytest
 from mgen import MusicGenerator
 from mgen import Style
@@ -46,9 +41,9 @@ def test_mgen_non_default_args():
     assert music_generator.author_name == author_name
 
 def test_create_melody_track():
-    '''
+    """
     Test that adding a melody track actually adds it to the composition
-    '''
+    """
     num_bars = 3
     music_generator = MusicGenerator()
 
@@ -58,10 +53,10 @@ def test_create_melody_track():
     assert len(music_generator.composition.tracks[0].bars) == num_bars
 
 def test_add_melody_two_tracks():
-    '''
+    """
     Test that adding two melody tracks actually adds them to the composition
     with the right number of bars
-    '''
+    """
     num_bars_1 = 2
     num_bars_2 = 3
     music_generator = MusicGenerator()
@@ -74,9 +69,9 @@ def test_add_melody_two_tracks():
     assert len(music_generator.composition.tracks[1].bars) == num_bars_2
 
 def test_create_melody_track_at_location():
-    '''
+    """
     Testing adding melody track at a specific bar
-    '''
+    """
     num_bars = 3
     location_to_add = 4
     music_generator = MusicGenerator()
@@ -95,9 +90,9 @@ def test_create_melody_track_at_location():
     assert len(music_generator.composition.tracks[0].bars[location_to_add - 1:]) == num_bars
 
 def test_create_melody_track_repeat():
-    '''
+    """
     Test that times_to_repeat actually repeats the melody track
-    '''
+    """
     num_bars = 4
     times_to_repeat = 2
     music_generator = MusicGenerator()
@@ -115,9 +110,9 @@ def test_create_melody_track_repeat():
         assert music_generator.composition.tracks[0].bars[x + num_bars] == music_generator.composition.tracks[0].bars[x + 2 * num_bars]
 
 def test_create_chords_track():
-    '''
+    """
     Test that adding a chords track actually adds it to the composition
-    '''
+    """
     num_bars = 3
     music_generator = MusicGenerator()
 
@@ -127,10 +122,10 @@ def test_create_chords_track():
     assert len(music_generator.composition.tracks[0].bars) == num_bars
 
 def test_add_chords_two_tracks():
-    '''
+    """
     Test that adding two chords tracks actually adds them to the composition
     with the right number of bars
-    '''
+    """
     num_bars_1 = 3
     num_bars_2 = 4
     music_generator = MusicGenerator()
@@ -143,9 +138,9 @@ def test_add_chords_two_tracks():
     assert len(music_generator.composition.tracks[1].bars) == num_bars_2
 
 def test_create_chords_track_at_location():
-    '''
+    """
     Testing adding chords track at a specific bar
-    '''
+    """
     num_bars = 3
     location_to_add = 4
     music_generator = MusicGenerator()
@@ -164,9 +159,9 @@ def test_create_chords_track_at_location():
     assert len(music_generator.composition.tracks[0].bars[location_to_add - 1:]) == num_bars
 
 def test_create_chords_track_repeat():
-    '''
+    """
     Test that times_to_repeat actually repeats the chords track
-    '''
+    """
     num_bars = 4
     times_to_repeat = 2
     music_generator = MusicGenerator()
@@ -184,10 +179,10 @@ def test_create_chords_track_repeat():
         assert music_generator.composition.tracks[0].bars[x + num_bars] == music_generator.composition.tracks[0].bars[x + 2 * num_bars]
 
 def test_create_melody_track_and_chords_track():
-    '''
+    """
     Test that when attempting to add both a melody and chords track to the composition,
     they actually get added
-    '''
+    """
     melody_num_bars = 3
     chords_num_bars = 4
     music_generator = MusicGenerator()
@@ -200,9 +195,9 @@ def test_create_melody_track_and_chords_track():
     assert len(music_generator.composition.tracks[1].bars) == chords_num_bars
 
 def test_remove_track_middle():
-    '''
+    """
     Test removing the middle track
-    '''
+    """
     melody_num_bars = 4
     chords_num_bars = 3
     music_generator = MusicGenerator()
@@ -221,9 +216,9 @@ def test_remove_track_middle():
     assert len(music_generator.composition.tracks[1].bars) == melody_num_bars
 
 def test_remove_track_default():
-    '''
+    """
     Test that default for remove_track removes the last track
-    '''
+    """
     melody_num_bars = 4
     chords_num_bars = 3
     music_generator = MusicGenerator()
@@ -242,9 +237,9 @@ def test_remove_track_default():
     assert len(music_generator.composition.tracks[1].bars) == melody_num_bars
 
 def test_set_invalid_time_signature():
-    '''
+    """
     Test that exception is thrown with invalid time signature
-    '''
+    """
     music_generator = MusicGenerator()
     time_signature = 'NOT A REAL TIME SIGNATURE'
 
@@ -252,9 +247,9 @@ def test_set_invalid_time_signature():
         music_generator.set_time_signature(time_signature)
 
 def test_set_valid_time_signature():
-    '''
+    """
     Test that setting a valid time signature works
-    '''
+    """
     music_generator = MusicGenerator()
     time_signature = (3, 4)
 
@@ -263,9 +258,9 @@ def test_set_valid_time_signature():
     assert music_generator._time_signature == time_signature
 
 def test_set_invalid_key():
-    '''
+    """
     Test that exception is thrown with invalid time key
-    '''
+    """
     music_generator = MusicGenerator()
     key = 'NOT A REAL KEY'
 
@@ -273,9 +268,9 @@ def test_set_invalid_key():
         music_generator.set_key(key)
 
 def test_set_valid_key():
-    '''
+    """
     Test that setting a valid key works
-    '''
+    """
     music_generator = MusicGenerator()
     key = 'Ab'
 
