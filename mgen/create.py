@@ -27,7 +27,7 @@ import warnings
 import traceback
 import pickle
 import copy
-
+from random import randint
 
 class MusicGenerator(object):
     """
@@ -446,3 +446,99 @@ class MusicGenerator(object):
             for item in raw_chord_progression:
                 extended_chord_progression.append(item)
         return extended_chord_progression
+
+class SmartGenerator(MusicGenerator):
+
+    def __init__(self):
+        super(SmartGenerator, self).__init__()
+
+    def create_melody_track(
+            self, num_bars, style=None, octave_adjust=0, peaks=None,
+            chords_track=None):
+        """
+        Creates a mingus Track containing bars of randomly generated melodies to
+        the composition.
+
+        :param num_bars: The number of bars to add to the track
+        :param style: The musical Style for the track, overrides the generator's
+        :param octave_adjust: Adjustment of the octave of notes in the generated bars (+/- int)
+        """
+
+        if style is None:
+            style = self.style_probs
+
+        if peaks is None:
+            peaks = []
+
+        # Check if it's a major key
+        major_key_bool = self._key.istitle()
+
+        # Add a track with the given style
+        melody_track = track.Track(style=style)
+
+        # Determine scale based on key
+        if major_key_bool:
+            scale = choice.choose_scale(self._key, style.probabilities['major_scales'])
+        else:
+            # Only accepts all uppercase when determining scale from key
+            key = self._key.upper()
+            scale = choice.choose_scale(key, style.probabilities['minor_scales'])
+
+        is_ascending = True
+        for _ in range(0, num_bars):
+            # Create time for melody
+            melody_timing = self._create_melody_timing(style.probabilities['timings'])
+
+            # Determine number notes in melody
+            number_notes = time.get_notes_in_timing(melody_timing)
+
+            # Choose notes for melody based on scale for given key
+            chosen_notes = choice.choose_next_notes(scale, number_notes, ascending=is_ascending)
+
+            chosen_notes = self.determine_rests(melody_timing, chosen_notes)
+
+            if octave_adjust != 0:
+                # Adjust octave
+                chosen_notes = convert.alter_octave(chosen_notes,
+                                                    octave_adjust)
+
+            # Combine melody time and notes into a mingus Bar object
+            bar_to_add = convert.convert_notes_to_bar(self._key, melody_timing,
+                                                      chosen_notes,
+                                                      self._time_signature)
+
+            # Add bar to track
+            melody_track.add_bar(bar_to_add)
+
+            is_ascending = not is_ascending
+
+        return melody_track
+
+    def determine_rests(self, melody_timing, chosen_notes):
+        new_notes = []
+
+        num_note_groups = len(melody_timing)
+        note_index = 0
+        for note_group in melody_timing:
+            notes_in_group = len(note_group)
+            choice = randint(0, num_note_groups)
+
+            if choice <= num_note_groups // 3:
+                # extend by rests for whole group
+                new_notes.extend([None]*notes_in_group)
+                note_index += notes_in_group
+            else:
+                for note in note_group:
+                    chance = randint(0, 100)
+                    if chance <= 10:
+                        note = None
+                    else:
+                        note = chosen_notes[note_index]
+
+                    new_notes.append(note)
+                    note_index += 1
+
+        print(melody_timing)
+        print(new_notes)
+
+        return new_notes

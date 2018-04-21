@@ -16,6 +16,7 @@ import mingus.core.scales as scales
 # Other Modules
 import random
 import warnings
+import copy
 
 MINGUS_TIMING_LOOKUP = {
     "whole": value.whole,
@@ -184,7 +185,7 @@ def choose_notes(number_notes, scale, choice=None):
 
     while (len(notes) < number_notes):
         # values less than 0 will result in a rest
-        choice = random.randint(-3, notes_in_scale - 1)
+        choice = random.randint(-5, notes_in_scale - 1)
         if choice >= -1:
             notes.append(scale.ascending()[choice])
         else:
@@ -192,6 +193,56 @@ def choose_notes(number_notes, scale, choice=None):
             notes.append(None)
 
     return notes
+
+
+def choose_next_notes(scale, num_notes, ascending=True):
+    notes = []
+    notes.append(choose_next_note(scale, ascending=True))
+    previous_notes = copy.deepcopy(notes)
+    for x in range(0, num_notes):
+        notes.append(choose_next_note(scale, previous_notes=previous_notes, ascending=True))
+        previous_notes = copy.deepcopy(notes)
+    return notes
+
+
+def choose_next_note(scale, previous_notes=None, ascending=True):
+    if ascending:
+        scale = scale.ascending()[:-1]
+    else:
+        scale = scale.descending()[:-1]
+
+    if previous_notes is None:
+        # middle note in scale
+        previous_note = scale[len(scale)//2]
+    else:
+        previous_note = previous_notes[-1]
+        if not previous_note:
+            # middle note in scale
+            previous_note = scale[len(scale)//2]
+
+    previous_note_position = scale.index(previous_note)
+
+    # arrange possible notes so closest note is at the front of the list
+    possible_notes = scale[previous_note_position+1:]
+    possible_notes.extend(scale[:previous_note_position+1])
+
+    max_value = len(scale)
+    choice = random.randint(0, max_value)
+
+    try:
+        if choice >= max_value // 2:
+            next_note = possible_notes[0]
+        elif choice <= max_value // 4:
+            next_note = possible_notes[1]
+        else:
+            next_note = possible_notes[2]
+    except IndexError:
+        if possible_notes:
+            next_note = possible_notes[0]
+        else:
+            next_note = None
+
+    return next_note
 
 
 def choose_next_timing(remaining_time_in_bar, note_timing_prob_list, choice=None):
